@@ -71,27 +71,27 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 		if (!bd.hasMethodOverrides()) {
 			Constructor<?> constructorToUse;
 			synchronized (bd.constructorArgumentLock) {
-				constructorToUse = (Constructor<?>) bd.resolvedConstructorOrFactoryMethod;
+				constructorToUse = (Constructor<?>) bd.resolvedConstructorOrFactoryMethod;  // 获取beanDefinition的bean的构造器
 				if (constructorToUse == null) {
-					final Class<?> clazz = bd.getBeanClass();
-					if (clazz.isInterface()) {
+					final Class<?> clazz = bd.getBeanClass(); // 获取字节码对象
+					if (clazz.isInterface()) {  // 如果是接口抛出异常
 						throw new BeanInstantiationException(clazz, "Specified class is an interface");
 					}
-					try {
-						if (System.getSecurityManager() != null) {
+					try { // 获取权限，操作构造器
+						if (System.getSecurityManager() != null) {  // 如果有安全管理器
 							constructorToUse = AccessController.doPrivileged(
 									(PrivilegedExceptionAction<Constructor<?>>) clazz::getDeclaredConstructor);
 						}
-						else {
+						else { // 没有安全管理器，直接获取构造器
 							constructorToUse = clazz.getDeclaredConstructor();
-						}
+						} // 对获取的构造器进行缓存
 						bd.resolvedConstructorOrFactoryMethod = constructorToUse;
 					}
 					catch (Throwable ex) {
 						throw new BeanInstantiationException(clazz, "No default constructor found", ex);
 					}
 				}
-			}
+			} // 进入bean内部，直接实例化，
 			return BeanUtils.instantiateClass(constructorToUse);
 		}
 		else {

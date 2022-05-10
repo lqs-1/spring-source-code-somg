@@ -10,9 +10,16 @@
 	<context:property-placeholder location="classpath:jdbc.properties"/>
 
 	<bean class="spring.demo.test.domain.User" id="user">
+
 		<property name="age" value="12"/>
 		<property name="id" value="1"/>
 		<property name="username" value="${jdbc.name}"/>
 	</bean>
+
+	<bean class="spring.demo.test.service.impl.UserServiceImpl"/>
+
+	<bean class="spring.demo.test.config.LiqisongBeanPostProcessor"/>
+
+
 
 </beans>

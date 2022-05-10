@@ -127,7 +127,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		// this behavior emulates a stack of delegates without actually necessitating one.
 		// 任何嵌套的<beans>元素都会在这个方法中引起递归。为了正确地传播和保存<beans>的默认-*属性，跟踪当前(父)委托，它可能是空的。
 		// 创建新的(子)委托，其中包含一个对父类的引用，以便进行回退，然后最终将this.delegate重置为其原始(父类)引用。
-		// 这个行为模拟了一堆委托，但实际上并不需要一个。
+		// 这个行为模拟了一堆委托，但实际上并不需要一个。这里是看看是否存在跟标签<beans>
 		BeanDefinitionParserDelegate parent = this.delegate;
 		this.delegate = createDelegate(getReaderContext(), root, parent);
 

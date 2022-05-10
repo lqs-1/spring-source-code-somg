@@ -467,7 +467,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	@Override
 	public String[] getBeanNamesForType(@Nullable Class<?> type, boolean includeNonSingletons, boolean allowEagerInit) {
 		if (!isConfigurationFrozen() || type == null || !allowEagerInit) {
-			return doGetBeanNamesForType(ResolvableType.forRawClass(type), includeNonSingletons, allowEagerInit);
+			return doGetBeanNamesForType(ResolvableType.forRawClass(type), includeNonSingletons, allowEagerInit);  // 根据类型获取beanName
 		}
 		Map<Class<?>, String[]> cache =
 				(includeNonSingletons ? this.allBeanNamesByType : this.singletonBeanNamesByType);
@@ -483,20 +483,20 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	}
 
 	private String[] doGetBeanNamesForType(ResolvableType type, boolean includeNonSingletons, boolean allowEagerInit) {
-		List<String> result = new ArrayList<>();
+		List<String> result = new ArrayList<>(); // 用户存放类型是BeanPostProcessor的BeanName的beanName列表
 
-		// Check all bean definitions.
+		// Check all bean definitions.   根据beanDefinitionName获取到每一个beanDefinition
 		for (String beanName : this.beanDefinitionNames) {
 			// Only consider bean as eligible if the bean name
-			// is not defined as alias for some other bean.
+			// is not defined as alias for some other bean.  如果beanName未定义为其他的别名，则仅将beanName视为合格
 			if (!isAlias(beanName)) {
 				try {
-					RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
-					// Only check bean definition if it is complete.
+					RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);  // 获取合并的本地BeanDefinition, 也就是获取一个完整的beanDefinition
+					// Only check bean definition if it is complete. 仅在完成时检查 beanDefinition
 					if (!mbd.isAbstract() && (allowEagerInit ||
 							(mbd.hasBeanClass() || !mbd.isLazyInit() || isAllowEagerClassLoading()) &&
 									!requiresEagerInitForType(mbd.getFactoryBeanName()))) {
-						// In case of FactoryBean, match object created by FactoryBean.
+						// In case of FactoryBean, match object created by FactoryBean.  对于FactoryBean，匹配由FactoryBean创建的对象，FacotryBean和BeanFactory的区别就是，FactoryBean是一个bean可以由用户实现接口自己定制的bean，beanFactory是baen工厂
 						boolean isFactoryBean = isFactoryBean(beanName, mbd);
 						BeanDefinitionHolder dbd = mbd.getDecoratedDefinition();
 						boolean matchFound =
@@ -504,7 +504,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 										(dbd != null && !mbd.isLazyInit()) || containsSingleton(beanName)) &&
 										(includeNonSingletons ||
 												(dbd != null ? mbd.isSingleton() : isSingleton(beanName))) &&
-										isTypeMatch(beanName, type);
+										isTypeMatch(beanName, type);  // isTypeMatch,类型匹配的核心步骤，将beanName对应的类型和BeanPostProcessor类型做对比
 						if (!matchFound && isFactoryBean) {
 							// In case of FactoryBean, try to match FactoryBean instance itself next.
 							beanName = FACTORY_BEAN_PREFIX + beanName;
@@ -536,11 +536,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 		}
 
-		// Check manually registered singletons too.
+		// Check manually registered singletons too. 遍历手动注册的单例beanName，也就是系统的一些Bean，environment，systemProperties，systemEnvironment
 		for (String beanName : this.manualSingletonNames) {
 			try {
 				// In case of FactoryBean, match object created by FactoryBean.
-				if (isFactoryBean(beanName)) {
+				if (isFactoryBean(beanName)) {  // 是否是FactoryBean类型
 					if ((includeNonSingletons || isSingleton(beanName)) && isTypeMatch(beanName, type)) {
 						result.add(beanName);
 						// Match found for this bean: do not match FactoryBean itself anymore.
@@ -550,7 +550,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					beanName = FACTORY_BEAN_PREFIX + beanName;
 				}
 				// Match raw bean instance (might be raw FactoryBean).
-				if (isTypeMatch(beanName, type)) {
+				if (isTypeMatch(beanName, type)) { // 是否是匹配类型的（BeanPostProcessor）
 					result.add(beanName);
 				}
 			} catch (NoSuchBeanDefinitionException ex) {
@@ -1032,9 +1032,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			synchronized (this.beanDefinitionMap) {
 				if (!this.beanDefinitionMap.containsKey(beanName)) {
 					Set<String> updatedSingletons = new LinkedHashSet<>(this.manualSingletonNames.size() + 1);
-					updatedSingletons.addAll(this.manualSingletonNames);
-					updatedSingletons.add(beanName);
-					this.manualSingletonNames = updatedSingletons;
+					updatedSingletons.addAll(this.manualSingletonNames);  // 将系统单例beanName存入，用于后期跟新
+					updatedSingletons.add(beanName); // 将这个messageSource的beanName存入，也是便于后期更新
+					this.manualSingletonNames = updatedSingletons;  // 直接更新
 				}
 			}
 		} else {
@@ -1043,7 +1043,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				this.manualSingletonNames.add(beanName);
 			}
 		}
-
+		// 清除类型缓存
 		clearByTypeCache();
 	}
 

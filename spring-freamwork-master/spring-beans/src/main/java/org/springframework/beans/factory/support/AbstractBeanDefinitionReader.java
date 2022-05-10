@@ -82,23 +82,23 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 	 *                 in the form of a BeanDefinitionRegistry
 	 * @see #setResourceLoader
 	 * @see #setEnvironment
-	 */
+	 */// 以 BeanDefinitionRegistry 的形式加载 bean 定义的 BeanFactory
 	protected AbstractBeanDefinitionReader(BeanDefinitionRegistry registry) {
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
-		this.registry = registry;
+		this.registry = registry; // 保存这个BeanDefinitionRegistry
 
-		// Determine ResourceLoader to use.
+		// Determine ResourceLoader to use. 确定要使用的这个BeanDefinitionRegistry是否是ResourceLoader的实例
 		if (this.registry instanceof ResourceLoader) {
-			this.resourceLoader = (ResourceLoader) this.registry;
+			this.resourceLoader = (ResourceLoader) this.registry; // 如果是ResourceLoader实例。那么直接将register强转为ResourceLoader类型并保存
 		} else {
-			this.resourceLoader = new PathMatchingResourcePatternResolver();
+			this.resourceLoader = new PathMatchingResourcePatternResolver(); // 如果不是资源解析器的实例，那么就创建一个资源解析器实例，并保存
 		}
 
-		// Inherit Environment if possible
+		// Inherit Environment if possible  判断是否是继承了环境
 		if (this.registry instanceof EnvironmentCapable) {
-			this.environment = ((EnvironmentCapable) this.registry).getEnvironment();
+			this.environment = ((EnvironmentCapable) this.registry).getEnvironment(); // 如果继承了环境，那么直接获取环境
 		} else {
-			this.environment = new StandardEnvironment();
+			this.environment = new StandardEnvironment(); // 如果没有继承环境，那么直接创建一个标准环境
 		}
 	}
 
@@ -131,7 +131,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 	@Override
 	@Nullable
 	public ResourceLoader getResourceLoader() {
-		return this.resourceLoader;
+		return this.resourceLoader; // 资源加载器在地86行的方法中赋值的。刚刚看过的
 	}
 
 	/**
@@ -221,7 +221,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 			throw new BeanDefinitionStoreException(
 					"Cannot load bean definitions from location [" + location + "]: no ResourceLoader available");
 		}
-		//若资源加载器是ResourcePatternResolver类型
+		//若资源加载器是ResourcePatternResolver类型。是否是资源模式解析器类型
 		if (resourceLoader instanceof ResourcePatternResolver) {
 			// Resource pattern matching available.
 			try {
@@ -257,6 +257,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 	public int loadBeanDefinitions(String... locations) throws BeanDefinitionStoreException {
 		Assert.notNull(locations, "Location array must not be null");
 		int count = 0;
+		// 返回beanDefinition的个数 source-code,遍历资源路径，配置文件根据配置文件的个数来遍历统计beanDefinition的个数
 		for (String location : locations) {
 			count += loadBeanDefinitions(location);
 		}

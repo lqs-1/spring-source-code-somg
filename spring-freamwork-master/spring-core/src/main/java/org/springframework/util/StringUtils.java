@@ -437,13 +437,13 @@ public abstract class StringUtils {
 	 */
 	public static String deleteAny(String inString, @Nullable String charsToDelete) {
 		if (!hasLength(inString) || !hasLength(charsToDelete)) {
-			return inString;
+			return inString; //
 		}
-
+		// 利用StringBuilder对象来拼接资源路径删除字符之后的数据进行存储
 		StringBuilder sb = new StringBuilder(inString.length());
 		for (int i = 0; i < inString.length(); i++) {
 			char c = inString.charAt(i);
-			if (charsToDelete.indexOf(c) == -1) {
+			if (charsToDelete.indexOf(c) == -1) {  // 如果这个字符在要删除的字符里的坐标不存在，那么就添加到StringBuilder对象
 				sb.append(c);
 			}
 		}
@@ -636,62 +636,62 @@ public abstract class StringUtils {
 		if (!hasLength(path)) {
 			return path;
 		}
-		String pathToUse = replace(path, WINDOWS_FOLDER_SEPARATOR, FOLDER_SEPARATOR);
+		String pathToUse = replace(path, WINDOWS_FOLDER_SEPARATOR, FOLDER_SEPARATOR);  // 将路径中的 \ 替换为 /
 
 		// Strip prefix from path to analyze, to not treat it as part of the
 		// first path element. This is necessary to correctly parse paths like
 		// "file:core/../core/io/Resource.class", where the ".." should just
-		// strip the first "core" directory while keeping the "file:" prefix.
-		int prefixIndex = pathToUse.indexOf(':');
+		// strip the first "core" directory while keeping the "file:" prefix.  将资源路劲中的无用字符剔除，前缀
+		int prefixIndex = pathToUse.indexOf(':');   // 获取 : 符号的坐标
 		String prefix = "";
 		if (prefixIndex != -1) {
-			prefix = pathToUse.substring(0, prefixIndex + 1);
-			if (prefix.contains(FOLDER_SEPARATOR)) {
+			prefix = pathToUse.substring(0, prefixIndex + 1);   // 截取开头到 ：的一段字符串  /liq/is/ong:    /
+			if (prefix.contains(FOLDER_SEPARATOR)) {  // 如果路劲中包含 / 那么就给prefix赋值为 “” 空
 				prefix = "";
 			}
 			else {
-				pathToUse = pathToUse.substring(prefixIndex + 1);
+				pathToUse = pathToUse.substring(prefixIndex + 1);  // 如果不包含 / 那么直接截取 ： 后面的数据直接给pathToUse
 			}
 		}
-		if (pathToUse.startsWith(FOLDER_SEPARATOR)) {
-			prefix = prefix + FOLDER_SEPARATOR;
-			pathToUse = pathToUse.substring(1);
+		if (pathToUse.startsWith(FOLDER_SEPARATOR)) {  // 如果pathToUse是 / 开头的
+			prefix = prefix + FOLDER_SEPARATOR;  // 前缀 + /
+			pathToUse = pathToUse.substring(1);  // pathToUse就是第一个 / 之后的所有数据
 		}
-
+		// 分隔列表到字符串数组,删除  /
 		String[] pathArray = delimitedListToStringArray(pathToUse, FOLDER_SEPARATOR);
-		LinkedList<String> pathElements = new LinkedList<>();
-		int tops = 0;
+		LinkedList<String> pathElements = new LinkedList<>(); // 存放路径元素的列表，基于链表的列表
+		int tops = 0; // 标记，顶级路径.或者..
 
 		for (int i = pathArray.length - 1; i >= 0; i--) {
 			String element = pathArray[i];
-			if (CURRENT_PATH.equals(element)) {
+			if (CURRENT_PATH.equals(element)) { // 判断解析出来的元素是否是当前路劲 .
 				// Points to current directory - drop it.
 			}
-			else if (TOP_PATH.equals(element)) {
+			else if (TOP_PATH.equals(element)) { // 判断解析出来的元素是否是上层路劲 .. 如果是，标记加一
 				// Registering top path found.
 				tops++;
 			}
 			else {
-				if (tops > 0) {
+				if (tops > 0) { // 如果是上层路径，那么标记减一，去掉一层，方便后面遍历
 					// Merging path element with element corresponding to top path.
 					tops--;
 				}
 				else {
-					// Normal path element found.
+					// Normal path element found.  找到正常路径元素，不是上面的两种情况， 就直接添加到存放路径元素的列表中
 					pathElements.add(0, element);
 				}
 			}
 		}
 
-		// Remaining top paths need to be retained.
+		// Remaining top paths need to be retained. 需要保留剩余的顶部路径 .. 到存放路径元素的列表中
 		for (int i = 0; i < tops; i++) {
 			pathElements.add(0, TOP_PATH);
 		}
-		// If nothing else left, at least explicitly point to current path.
+		// If nothing else left, at least explicitly point to current path. 如果没有其他内容，至少明确指向当前路径
 		if (pathElements.size() == 1 && "".equals(pathElements.getLast()) && !prefix.endsWith(FOLDER_SEPARATOR)) {
 			pathElements.add(0, CURRENT_PATH);
 		}
-
+		// 集合到分隔字符串，拼接一个路径
 		return prefix + collectionToDelimitedString(pathElements, FOLDER_SEPARATOR);
 	}
 
@@ -1200,12 +1200,12 @@ public abstract class StringUtils {
 		else {
 			int pos = 0;
 			int delPos;
-			while ((delPos = str.indexOf(delimiter, pos)) != -1) {
+			while ((delPos = str.indexOf(delimiter, pos)) != -1) {  // 从第一个坐标 0 开始查找 / 的坐标， 如果返回 -1 就表示没找到，就表示只有一个资源， 这里是添加多个资源的
 				result.add(deleteAny(str.substring(pos, delPos), charsToDelete));
 				pos = delPos + delimiter.length();
 			}
 			if (str.length() > 0 && pos <= str.length()) {
-				// Add rest of String, but not in case of empty input.
+				// Add rest of String, but not in case of empty input. // 添加字符串的剩余部分，只有一个资源, 把要删除的字符删除
 				result.add(deleteAny(str.substring(pos), charsToDelete));
 			}
 		}
@@ -1254,9 +1254,9 @@ public abstract class StringUtils {
 		StringBuilder sb = new StringBuilder();
 		Iterator<?> it = coll.iterator();
 		while (it.hasNext()) {
-			sb.append(prefix).append(it.next()).append(suffix);
+			sb.append(prefix).append(it.next()).append(suffix); // 利用迭代器，拼接字符串，拼接路径
 			if (it.hasNext()) {
-				sb.append(delim);
+				sb.append(delim); // 如果还有下一层，那么就添加分隔符 /
 			}
 		}
 		return sb.toString();

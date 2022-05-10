@@ -291,7 +291,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 		}
 		else {
 			// Generally only look for a pattern after a prefix here,
-			// and on Tomcat only after the "*/" separator for its "war:" protocol.
+			// and on Tomcat only after the "*/" separator for its "war:" protocol. 若路径以war:开头
 			int prefixEnd = (locationPattern.startsWith("war:") ? locationPattern.indexOf("*/") + 1 :
 					locationPattern.indexOf(':') + 1);
 			if (getPathMatcher().isPattern(locationPattern.substring(prefixEnd))) {
@@ -299,7 +299,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 				return findPathMatchingResources(locationPattern);
 			}
 			else {
-				// a single resource with the given name
+				// a single resource with the given name  具有给定名称的单个资源，不符合上面两种情况的，直接把资源路劲拿来解析出资源
 				return new Resource[] {getResourceLoader().getResource(locationPattern)};
 			}
 		}

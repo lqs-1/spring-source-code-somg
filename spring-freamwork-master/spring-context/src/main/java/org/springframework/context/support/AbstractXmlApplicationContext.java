@@ -131,10 +131,10 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 			//loadBeanDefinitions()负责配置文件的加载与注册，这和BeanFactory中的策略是一样的
 			reader.loadBeanDefinitions(configResources);
 		}
-		//返回资源文件地址
+		//返回资源文件地址，在刚进入调试的时候，就拿到的资源路径
 		String[] configLocations = getConfigLocations();
 		if (configLocations != null) {
-			reader.loadBeanDefinitions(configLocations);
+			reader.loadBeanDefinitions(configLocations); // 根据资源路径进行解析，然后开始加载所有的beanDefinition
 		}
 	}
 

@@ -167,9 +167,9 @@ public abstract class BeanUtils {
 	public static <T> T instantiateClass(Constructor<T> ctor, Object... args) throws BeanInstantiationException {
 		Assert.notNull(ctor, "Constructor must not be null");
 		try {
-			ReflectionUtils.makeAccessible(ctor);
+			ReflectionUtils.makeAccessible(ctor);  // 开启构造器权限
 			return (KotlinDetector.isKotlinReflectPresent() && KotlinDetector.isKotlinType(ctor.getDeclaringClass()) ?
-					KotlinDelegate.instantiateClass(ctor, args) : ctor.newInstance(args));
+					KotlinDelegate.instantiateClass(ctor, args) : ctor.newInstance(args)); // 进行实例化
 		}
 		catch (InstantiationException ex) {
 			throw new BeanInstantiationException(ctor, "Is it an abstract class?", ex);

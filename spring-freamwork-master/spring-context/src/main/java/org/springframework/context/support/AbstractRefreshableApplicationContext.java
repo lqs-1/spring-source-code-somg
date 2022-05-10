@@ -134,7 +134,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 			//定制beanFactory，设置相关属性，包括是否允许覆盖同名称的不同定义的对象、是否允许bean之间存在循环依赖
 			// 设置@Autowired和@Qualifier注解解析器QualifierAnnotationAutowireCandidateResolver(这在3.0版本中还是存在的)
 			customizeBeanFactory(beanFactory);
-			//初始化DocumentReader，并进行XML文件读取及解析
+			//初始化DocumentReader，并进行XML文件读取及解析,这里是核心步骤，beanDefinition的读取都在里面，读取解析各种标签也在里面
 			loadBeanDefinitions(beanFactory);
 			//使用全局变量beanFactory记录DefaultListableBeanFactory实例
 			synchronized (this.beanFactoryMonitor) {

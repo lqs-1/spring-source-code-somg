@@ -121,7 +121,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		Assert.notNull(beanName, "Bean name must not be null");
 		Assert.notNull(singletonObject, "Singleton object must not be null");
 		synchronized (this.singletonObjects) {
-			Object oldObject = this.singletonObjects.get(beanName);
+			Object oldObject = this.singletonObjects.get(beanName); // 获取bean，获取的是messageSource的bean，如果有就抛出异常，因为如果有，就不符合逻辑，如果没有就添加一个空的对象
 			if (oldObject != null) {
 				throw new IllegalStateException("Could not register object [" + singletonObject +
 						"] under bean name '" + beanName + "': there is already object [" + oldObject + "] bound");

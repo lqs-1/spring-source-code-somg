@@ -151,20 +151,22 @@ public class DefaultResourceLoader implements ResourceLoader {
 			}
 		}
 
+		// 如果资源路径是/开头的
 		if (location.startsWith("/")) {
 			return getResourceByPath(location);
 		}
+		// 如果是classpath开头的
 		else if (location.startsWith(CLASSPATH_URL_PREFIX)) {
 			return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX.length()), getClassLoader());
 		}
 		else {
 			try {
-				// Try to parse the location as a URL...
+				// Try to parse the location as a URL... 如果不是上面两种就尝试将路径解析为url，统一资源定位符
 				URL url = new URL(location);
 				return (ResourceUtils.isFileURL(url) ? new FileUrlResource(url) : new UrlResource(url));
 			}
 			catch (MalformedURLException ex) {
-				// No URL -> resolve as resource path.
+				// No URL -> resolve as resource path.  如果不是url那么直接解析为资源路径
 				return getResourceByPath(location);
 			}
 		}
