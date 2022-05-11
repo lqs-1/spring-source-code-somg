@@ -88,7 +88,7 @@ abstract class ConfigurationClassUtils {
 
 		AnnotationMetadata metadata; // 创建一个元数据变量
 		if (beanDef instanceof AnnotatedBeanDefinition &&  // 这个Bean是否是带注解的Bean
-				className.equals(((AnnotatedBeanDefinition) beanDef).getMetadata().getClassName())) {  // 这个bean的全限定名是否和转化成注解beanDefiniton里面的bean的全限定名一至
+				className.equals(((AnnotatedBeanDefinition) beanDef).getMetadata().getClassName())) {  // 这个bean的全限定名是否和转化成注解beanDefinition里面的bean的全限定名一至
 			// Can reuse the pre-parsed metadata from the given BeanDefinition...
 			metadata = ((AnnotatedBeanDefinition) beanDef).getMetadata(); // 如果满足条件，从beanDefinition中获取元数据
 		}
@@ -150,7 +150,7 @@ abstract class ConfigurationClassUtils {
 	 * configuration class, including cross-method call interception
 	 */
 	public static boolean isFullConfigurationCandidate(AnnotationMetadata metadata) {
-		return metadata.isAnnotated(Configuration.class.getName());
+		return metadata.isAnnotated(Configuration.class.getName());  // 有Configuration注解就是FUll
 	}
 
 	/**

@@ -103,7 +103,7 @@ final class PostProcessorRegistrationDelegate {
 			// 遍历currentRegistryProcessors, 执行postProcessBeanDefinitionRegistry方法。如果是AnnotationConfigApplicationContext方式，这里面就会有个ConfigurationClassPostProcessor，这个后处理器，会对注解配置的Bean就行解析并添加BeanDefinition
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 			// 执行完毕清空currentRegistryProcessors
-			currentRegistryProcessors.clear();
+			currentRegistryProcessors.clear();  // 5.11 从这里开始没读
 
 			// Next, invoke the BeanDefinitionRegistryPostProcessors that implement Ordered.
 			// 接着，调用实现了Ordered接口的BeanDefinitionRegistryPostProcessor

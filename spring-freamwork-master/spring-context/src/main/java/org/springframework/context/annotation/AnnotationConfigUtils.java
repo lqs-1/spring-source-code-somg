@@ -231,7 +231,7 @@ public abstract class AnnotationConfigUtils {
 	}
 
 	public static void processCommonDefinitionAnnotations(AnnotatedBeanDefinition abd) {
-		processCommonDefinitionAnnotations(abd, abd.getMetadata());
+		processCommonDefinitionAnnotations(abd, abd.getMetadata());  //流程通用定义注释
 	}
 
 	static void processCommonDefinitionAnnotations(AnnotatedBeanDefinition abd, AnnotatedTypeMetadata metadata) {
@@ -297,10 +297,10 @@ public abstract class AnnotationConfigUtils {
 
 		Set<AnnotationAttributes> result = new LinkedHashSet<>();
 
-		// Direct annotation present?
+		// Direct annotation present?  如果不为空，则添加属性
 		addAttributesIfNotNull(result, metadata.getAnnotationAttributes(annotationClassName, false));
 
-		// Container annotation present?
+		// Container annotation present?  存在容器注解
 		Map<String, Object> container = metadata.getAnnotationAttributes(containerClassName, false);
 		if (container != null && container.containsKey("value")) {
 			for (Map<String, Object> containedAttributes : (Map<String, Object>[]) container.get("value")) {

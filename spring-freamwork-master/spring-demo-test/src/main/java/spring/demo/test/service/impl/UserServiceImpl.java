@@ -12,7 +12,7 @@ import spring.demo.test.service.UserService;
  * @do :
  */
 
-@Service
+//@Service
 public class UserServiceImpl implements UserService{
 	public String ToString() {
 		return "ok";

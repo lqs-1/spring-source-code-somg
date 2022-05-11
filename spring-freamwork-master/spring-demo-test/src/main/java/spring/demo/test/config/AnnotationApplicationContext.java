@@ -1,9 +1,9 @@
 package spring.demo.test.config;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.*;
+import spring.demo.test.Man;
+import spring.demo.test.service.UserService;
+import spring.demo.test.service.impl.UserServiceImpl;
 
 /**
  * @author : 李奇凇
@@ -16,4 +16,17 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @ComponentScan("spring.demo.test")
 @EnableAspectJAutoProxy
 public class AnnotationApplicationContext {
+
+
+	@Bean
+	public UserService userService(){
+		return new UserServiceImpl();
+	}
+
+	@Bean
+	public Man man(){
+		return new Man();
+	}
+
+
 }

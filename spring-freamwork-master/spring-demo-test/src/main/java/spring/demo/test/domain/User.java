@@ -1,6 +1,9 @@
 package spring.demo.test.domain;
 
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class User {
 	private Long id;
 	private String username;

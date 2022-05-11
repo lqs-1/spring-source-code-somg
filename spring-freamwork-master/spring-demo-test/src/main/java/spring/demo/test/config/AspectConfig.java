@@ -5,6 +5,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import spring.demo.test.service.UserService;
 import spring.demo.test.service.impl.UserServiceImpl;
 
@@ -17,7 +18,7 @@ import spring.demo.test.service.impl.UserServiceImpl;
 
 
 @Aspect
-@Component
+@Service
 public class AspectConfig {
 
 	//此处定义一个通用的切点,以便下方4个通知使用

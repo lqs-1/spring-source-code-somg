@@ -1,7 +1,6 @@
 package spring.demo.test.beanTest;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import spring.demo.test.Man;
 import spring.demo.test.config.AnnotationApplicationContext;
 import spring.demo.test.service.UserService;
 
