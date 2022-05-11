@@ -74,16 +74,16 @@ public class AnnotationScopeMetadataResolver implements ScopeMetadataResolver {
 	}
 
 
-	@Override
+	@Override  // 获取创建方式，代理  and  singleTon
 	public ScopeMetadata resolveScopeMetadata(BeanDefinition definition) {
-		ScopeMetadata metadata = new ScopeMetadata();
+		ScopeMetadata metadata = new ScopeMetadata();  // 创建创建方式对象，这个对象中默认就是 singleton
 		if (definition instanceof AnnotatedBeanDefinition) {
 			AnnotatedBeanDefinition annDef = (AnnotatedBeanDefinition) definition;
 			AnnotationAttributes attributes = AnnotationConfigUtils.attributesFor(
-					annDef.getMetadata(), this.scopeAnnotationType);
+					annDef.getMetadata(), this.scopeAnnotationType);  // 从BeanDefinition中获取创建方式属性值
 			if (attributes != null) {
 				metadata.setScopeName(attributes.getString("value"));
-				ScopedProxyMode proxyMode = attributes.getEnum("proxyMode");
+				ScopedProxyMode proxyMode = attributes.getEnum("proxyMode");  // 代理模式
 				if (proxyMode == ScopedProxyMode.DEFAULT) {
 					proxyMode = this.defaultProxyMode;
 				}

@@ -535,7 +535,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			// Tell the subclass to refresh the internal bean factory.
 			// 初始化BeanFactory，并进行XML文件读取，这里将复用BeanFactory中的配置文件读取解析等功能
 			// 此时xml中定义的配置都已经转换成各种BeanDefinition对象存储在BeanFactory中
-			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();   // 重点,解析beanDefinition
+			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();   // 重点,解析beanDefinition，是XML文件的方式，annotation的不在这里
 
 			/* ======到这里为止，spring已完成对配置的解析，而ApplicationContext基于BeanFactory的拓展也是从这里正式开始====== */
 			// Prepare the bean factory for use in this context.

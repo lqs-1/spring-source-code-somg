@@ -148,18 +148,18 @@ public abstract class AnnotationConfigUtils {
 	public static Set<BeanDefinitionHolder> registerAnnotationConfigProcessors(
 			BeanDefinitionRegistry registry, @Nullable Object source) {
 
-		DefaultListableBeanFactory beanFactory = unwrapDefaultListableBeanFactory(registry);
+		DefaultListableBeanFactory beanFactory = unwrapDefaultListableBeanFactory(registry); // 创建默认可列出 Bean 工厂
 		if (beanFactory != null) {
-			if (!(beanFactory.getDependencyComparator() instanceof AnnotationAwareOrderComparator)) {
+			if (!(beanFactory.getDependencyComparator() instanceof AnnotationAwareOrderComparator)) {  // 如果BeanFactory的依赖比较器不是AnnotationAwareOrderComparator类型的，就直接给BeanFactory创建一个AnnotationAwareOrderComparator类型的
 				beanFactory.setDependencyComparator(AnnotationAwareOrderComparator.INSTANCE);
 			}
-			if (!(beanFactory.getAutowireCandidateResolver() instanceof ContextAnnotationAutowireCandidateResolver)) {
+			if (!(beanFactory.getAutowireCandidateResolver() instanceof ContextAnnotationAutowireCandidateResolver)) { // 如果BeanFactory的自动装配解析器不是ContextAnnotationAutowireCandidateResolver类型，那么就给BeanFactory设置一个ContextAnnotationAutowireCandidateResolver的自动装配解析器
 				beanFactory.setAutowireCandidateResolver(new ContextAnnotationAutowireCandidateResolver());
 			}
 		}
-
+		// 创建一个BeanDefinition处理这集合，大小为8
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
-
+		// 以下几个类似的方法都是判断注册器是否包含指定的BeanDefinition，如果不包含就创建
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
 			def.setSource(source);
@@ -211,9 +211,9 @@ public abstract class AnnotationConfigUtils {
 
 	private static BeanDefinitionHolder registerPostProcessor(
 			BeanDefinitionRegistry registry, RootBeanDefinition definition, String beanName) {
-
+		//  给beanDefinition设置角色
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		registry.registerBeanDefinition(beanName, definition);
+		registry.registerBeanDefinition(beanName, definition);  // 使用注册器注册这个BeanDefinition
 		return new BeanDefinitionHolder(definition, beanName);
 	}
 
@@ -235,9 +235,9 @@ public abstract class AnnotationConfigUtils {
 	}
 
 	static void processCommonDefinitionAnnotations(AnnotatedBeanDefinition abd, AnnotatedTypeMetadata metadata) {
-		AnnotationAttributes lazy = attributesFor(metadata, Lazy.class);
+		AnnotationAttributes lazy = attributesFor(metadata, Lazy.class);  // 获取是否懒加载注解
 		if (lazy != null) {
-			abd.setLazyInit(lazy.getBoolean("value"));
+			abd.setLazyInit(lazy.getBoolean("value"));  // 如果配置了懒加载，就获取值并添加到beanDefinition
 		}
 		else if (abd.getMetadata() != metadata) {
 			lazy = attributesFor(abd.getMetadata(), Lazy.class);
@@ -246,12 +246,12 @@ public abstract class AnnotationConfigUtils {
 			}
 		}
 
-		if (metadata.isAnnotated(Primary.class.getName())) {
-			abd.setPrimary(true);
+		if (metadata.isAnnotated(Primary.class.getName())) {  // 判断元数据中是否有Primary注解
+			abd.setPrimary(true);  // 如果有，就设置状态
 		}
-		AnnotationAttributes dependsOn = attributesFor(metadata, DependsOn.class);
+		AnnotationAttributes dependsOn = attributesFor(metadata, DependsOn.class);  // 获取是否配置依赖于DependsOn注解
 		if (dependsOn != null) {
-			abd.setDependsOn(dependsOn.getStringArray("value"));
+			abd.setDependsOn(dependsOn.getStringArray("value"));  // 如果使用了这个注解，那么就给BeanDefinition设置对应的值
 		}
 
 		AnnotationAttributes role = attributesFor(metadata, Role.class);
@@ -267,12 +267,12 @@ public abstract class AnnotationConfigUtils {
 	static BeanDefinitionHolder applyScopedProxyMode(
 			ScopeMetadata metadata, BeanDefinitionHolder definition, BeanDefinitionRegistry registry) {
 
-		ScopedProxyMode scopedProxyMode = metadata.getScopedProxyMode();
-		if (scopedProxyMode.equals(ScopedProxyMode.NO)) {
+		ScopedProxyMode scopedProxyMode = metadata.getScopedProxyMode();  // 从创建方式的元数据中获取代理模式的元数据
+		if (scopedProxyMode.equals(ScopedProxyMode.NO)) { // 代理数据的额元数据不存在
 			return definition;
 		}
-		boolean proxyTargetClass = scopedProxyMode.equals(ScopedProxyMode.TARGET_CLASS);
-		return ScopedProxyCreator.createScopedProxy(definition, registry, proxyTargetClass);
+		boolean proxyTargetClass = scopedProxyMode.equals(ScopedProxyMode.TARGET_CLASS);  // 是代理模式
+		return ScopedProxyCreator.createScopedProxy(definition, registry, proxyTargetClass); // 创建代理
 	}
 
 	@Nullable

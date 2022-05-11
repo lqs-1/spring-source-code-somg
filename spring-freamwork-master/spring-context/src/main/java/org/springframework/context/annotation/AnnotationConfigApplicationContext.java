@@ -62,7 +62,22 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * through {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 */
 	public AnnotationConfigApplicationContext() {
+		// 在执行这个构造方法之前，会先执行父类的构造方法，会初始化一个beanFactory = new DefaultListableBeanFactory()
+		// 在创建AnnotatedBeanDefinitionReader时候，生成并注册5个BeanDefinition
+		// 1.ConfigurationClassPostProcessor
+		// 2.AutowiredAnnotationBeanPostProcessor
+		// 3.CommonAnnotationBeanPostProcessor
+		// 4.EventListenerMethodProcessor
+		// 5.DefaultEventListenerFactory
+		/**
+		 * 创建一个读取注解Bean的定义读取器
+		 * 什么是bean定义？BeanDefinition   private final AnnotatedBeanDefinitionReader reader;
+		 * AnnotatedBeanDefinition最终继承BeanDefinition
+		 * BeanDefinition spring中用来描述bean的一个接口
+		 *
+		 * */
 		this.reader = new AnnotatedBeanDefinitionReader(this);
+		// 注册默认的includeFilter，根据规则生成对应的BeanDefinition，ClassPathBeanDefinitionScanner, 创建类路径 BeanDefinition 扫描器
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 
@@ -87,9 +102,12 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 *                         e.g. {@link Configuration @Configuration} classes
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
-		//构造read和scan
+		//这里由于他有父类，所以会先调用父类的构造方法
+		//在这个方法中初始化一个读取器，和一个扫描器
+		// 1. 生成AnnotatedBeanDefinitionReader
+		// 2. 生成ClassPathBeanDefinitionScanner
 		this();
-		//将用户类注册进去
+		// 利用register把annotatedClasses（配置类)注册为一个beanDefinition
 		register(annotatedClasses);
 		//最为核心的方法，整个Spring的加载流程
 		refresh();

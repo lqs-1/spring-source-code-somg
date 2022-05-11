@@ -943,14 +943,14 @@ public abstract class ClassUtils {
 	 */
 	public static String getShortName(String className) {
 		Assert.hasLength(className, "Class name must not be empty");
-		int lastDotIndex = className.lastIndexOf(PACKAGE_SEPARATOR);
-		int nameEndIndex = className.indexOf(CGLIB_CLASS_SEPARATOR);
+		int lastDotIndex = className.lastIndexOf(PACKAGE_SEPARATOR);  // 获取最后一个.的坐标
+		int nameEndIndex = className.indexOf(CGLIB_CLASS_SEPARATOR);  // 获取 $$ 在字符串中的坐标，也就是获取一个全限定名中一定没有的字符，因为这个字符有特殊意义
 		if (nameEndIndex == -1) {
-			nameEndIndex = className.length();
+			nameEndIndex = className.length();  // 如果不存在 $$ 就把整个字符串的长度给它
 		}
-		String shortName = className.substring(lastDotIndex + 1, nameEndIndex);
-		shortName = shortName.replace(INNER_CLASS_SEPARATOR, PACKAGE_SEPARATOR);
-		return shortName;
+		String shortName = className.substring(lastDotIndex + 1, nameEndIndex);  // 切割出配置类类名
+		shortName = shortName.replace(INNER_CLASS_SEPARATOR, PACKAGE_SEPARATOR);  // 将$替换成.
+		return shortName;  // 返回BeanName
 	}
 
 	/**

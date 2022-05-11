@@ -13,9 +13,8 @@ import spring.demo.test.service.UserService;
  */
 
 @Service
-public class UserServiceImpl implements UserService {
-	@Override
+public class UserServiceImpl implements UserService{
 	public String ToString() {
-		return "获取到了";
+		return "ok";
 	}
 }

@@ -228,7 +228,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 					"postProcessBeanFactory already called on this post-processor against " + registry);
 		}
 		this.registriesPostProcessed.add(registryId);
-
+		// 处理配置的配置类的Ben的BeanDefinition，AnnotationConfigApplicationContext的读取在这里
 		processConfigBeanDefinitions(registry);
 	}
 
@@ -259,10 +259,10 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	 * {@link Configuration} classes.
 	 */
 	public void processConfigBeanDefinitions(BeanDefinitionRegistry registry) {
-		List<BeanDefinitionHolder> configCandidates = new ArrayList<>();
-		String[] candidateNames = registry.getBeanDefinitionNames();
+		List<BeanDefinitionHolder> configCandidates = new ArrayList<>();  // 创建一个封装所有beanDefinition的处理器列表，就是配置类的列表
+		String[] candidateNames = registry.getBeanDefinitionNames();  // 获取BeanDefinitionName数组，下面会根据这个beanDefinition来判断是否是配置类
 
-		for (String beanName : candidateNames) {
+		for (String beanName : candidateNames) { // 遍历BeanDefinitionName，根据名字获取具体的BeanDefinition
 			BeanDefinition beanDef = registry.getBeanDefinition(beanName);
 			if (ConfigurationClassUtils.isFullConfigurationClass(beanDef) ||
 					ConfigurationClassUtils.isLiteConfigurationClass(beanDef)) {
@@ -323,7 +323,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				this.reader = new ConfigurationClassBeanDefinitionReader(
 						registry, this.sourceExtractor, this.resourceLoader, this.environment,
 						this.importBeanNameGenerator, parser.getImportRegistry());
-			}
+			} // 见到亲人了
 			this.reader.loadBeanDefinitions(configClasses);
 			alreadyParsed.addAll(configClasses);
 

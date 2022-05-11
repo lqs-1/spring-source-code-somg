@@ -49,9 +49,9 @@ public class AnnotatedBeanDefinitionReader {
 
 	private final BeanDefinitionRegistry registry;
 
-	private BeanNameGenerator beanNameGenerator = new AnnotationBeanNameGenerator();
+	private BeanNameGenerator beanNameGenerator = new AnnotationBeanNameGenerator(); // 创建一个BeanName生成器
 
-	private ScopeMetadataResolver scopeMetadataResolver = new AnnotationScopeMetadataResolver();
+	private ScopeMetadataResolver scopeMetadataResolver = new AnnotationScopeMetadataResolver(); // 创建模式解析器
 
 	private ConditionEvaluator conditionEvaluator;
 
@@ -67,7 +67,7 @@ public class AnnotatedBeanDefinitionReader {
 	 * @see #setEnvironment(Environment)
 	 */
 	public AnnotatedBeanDefinitionReader(BeanDefinitionRegistry registry) {
-		this(registry, getOrCreateEnvironment(registry));
+		this(registry, getOrCreateEnvironment(registry)); // getOrCreateEnvironment 获取或者创建环境
 	}
 
 	/**
@@ -82,9 +82,9 @@ public class AnnotatedBeanDefinitionReader {
 	public AnnotatedBeanDefinitionReader(BeanDefinitionRegistry registry, Environment environment) {
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
 		Assert.notNull(environment, "Environment must not be null");
-		this.registry = registry;
-		this.conditionEvaluator = new ConditionEvaluator(registry, environment, null);
-		AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
+		this.registry = registry;  // 保存注册器
+		this.conditionEvaluator = new ConditionEvaluator(registry, environment, null);  // 创建并保存调教评估器
+		AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry); // 注册注解配置处理器
 	}
 
 
@@ -213,17 +213,17 @@ public class AnnotatedBeanDefinitionReader {
 	<T> void doRegisterBean(Class<T> annotatedClass, @Nullable Supplier<T> instanceSupplier, @Nullable String name,
 			@Nullable Class<? extends Annotation>[] qualifiers, BeanDefinitionCustomizer... definitionCustomizers) {
 
-		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(annotatedClass);
-		if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) {
+		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(annotatedClass);  // 创建配置类注解通用BeanDefinition
+		if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) { // 通过对比器，对比元数据里面的的属性，是否跳过注册
 			return;
 		}
 
-		abd.setInstanceSupplier(instanceSupplier);
-		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
-		abd.setScope(scopeMetadata.getScopeName());
-		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
+		abd.setInstanceSupplier(instanceSupplier);  // 配置实例提供方
+		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd); // 获取创建方式，单例或者代理
+		abd.setScope(scopeMetadata.getScopeName());  // 给BeanDefinition设置创建模式，这个步骤里，可能创建方式是有的，就是为了防止没有。所以上面哪一步是很有必要的
+		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));  // 是否有beanName，如果没有，根据规则生成
 
-		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
+		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);  // 先对BeanDefinition的通用注解处理
 		if (qualifiers != null) {
 			for (Class<? extends Annotation> qualifier : qualifiers) {
 				if (Primary.class == qualifier) {
@@ -240,9 +240,9 @@ public class AnnotatedBeanDefinitionReader {
 		for (BeanDefinitionCustomizer customizer : definitionCustomizers) {
 			customizer.customize(abd);
 		}
-
+		// 创建对应的BeanDefinition处理者
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
-		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
+		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);  // 是否应用代理模式，就在刚刚判断模式的时候，只有两种，单例和代理
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
 	}
 
@@ -253,9 +253,11 @@ public class AnnotatedBeanDefinitionReader {
 	 */
 	private static Environment getOrCreateEnvironment(BeanDefinitionRegistry registry) {
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
+		// 如果注册器环境，就直接获取环境直接返回
 		if (registry instanceof EnvironmentCapable) {
 			return ((EnvironmentCapable) registry).getEnvironment();
 		}
+		// 没有就直接创建一个默认的环境
 		return new StandardEnvironment();
 	}
 

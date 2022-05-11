@@ -108,7 +108,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 * @see #setEnvironment
 	 */
 	public ClassPathBeanDefinitionScanner(BeanDefinitionRegistry registry, boolean useDefaultFilters) {
-		this(registry, useDefaultFilters, getOrCreateEnvironment(registry));
+		this(registry, useDefaultFilters, getOrCreateEnvironment(registry)); // 获取或者创建环境  getOrCreateEnvironment
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 										  Environment environment) {
 
 		this(registry, useDefaultFilters, environment,
-				(registry instanceof ResourceLoader ? (ResourceLoader) registry : null));
+				(registry instanceof ResourceLoader ? (ResourceLoader) registry : null));  // 判断注册器时候是资源加载器，如果是就强转
 	}
 
 	/**

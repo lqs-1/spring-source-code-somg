@@ -37,7 +37,7 @@ final class ScopedProxyCreator {
 	public static BeanDefinitionHolder createScopedProxy(
 			BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry, boolean proxyTargetClass) {
 
-		return ScopedProxyUtils.createScopedProxy(definitionHolder, registry, proxyTargetClass);
+		return ScopedProxyUtils.createScopedProxy(definitionHolder, registry, proxyTargetClass);  // 进入创建代理
 	}
 
 	public static String getTargetBeanName(String originalBeanName) {
