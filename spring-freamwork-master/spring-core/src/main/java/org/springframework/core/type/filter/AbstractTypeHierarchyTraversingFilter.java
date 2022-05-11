@@ -59,10 +59,10 @@ public abstract class AbstractTypeHierarchyTraversingFilter implements TypeFilte
 
 		// This method optimizes avoiding unnecessary creation of ClassReaders
 		// as well as visiting over those readers.
-		if (matchSelf(metadataReader)) {
+		if (matchSelf(metadataReader)) {  // 如果包含Component直接true
 			return true;
 		}
-		ClassMetadata metadata = metadataReader.getClassMetadata();
+		ClassMetadata metadata = metadataReader.getClassMetadata();  // 拿到元数据
 		if (matchClassName(metadata.getClassName())) {
 			return true;
 		}

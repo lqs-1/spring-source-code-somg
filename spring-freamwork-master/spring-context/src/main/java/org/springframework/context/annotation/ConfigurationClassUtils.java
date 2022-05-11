@@ -81,22 +81,22 @@ abstract class ConfigurationClassUtils {
 	public static boolean checkConfigurationClassCandidate(
 			BeanDefinition beanDef, MetadataReaderFactory metadataReaderFactory) {
 
-		String className = beanDef.getBeanClassName();
+		String className = beanDef.getBeanClassName();  // 获取bean的全限定名
 		if (className == null || beanDef.getFactoryMethodName() != null) {
 			return false;
 		}
 
-		AnnotationMetadata metadata;
-		if (beanDef instanceof AnnotatedBeanDefinition &&
-				className.equals(((AnnotatedBeanDefinition) beanDef).getMetadata().getClassName())) {
+		AnnotationMetadata metadata; // 创建一个元数据变量
+		if (beanDef instanceof AnnotatedBeanDefinition &&  // 这个Bean是否是带注解的Bean
+				className.equals(((AnnotatedBeanDefinition) beanDef).getMetadata().getClassName())) {  // 这个bean的全限定名是否和转化成注解beanDefiniton里面的bean的全限定名一至
 			// Can reuse the pre-parsed metadata from the given BeanDefinition...
-			metadata = ((AnnotatedBeanDefinition) beanDef).getMetadata();
+			metadata = ((AnnotatedBeanDefinition) beanDef).getMetadata(); // 如果满足条件，从beanDefinition中获取元数据
 		}
-		else if (beanDef instanceof AbstractBeanDefinition && ((AbstractBeanDefinition) beanDef).hasBeanClass()) {
+		else if (beanDef instanceof AbstractBeanDefinition && ((AbstractBeanDefinition) beanDef).hasBeanClass()) { // 这个BeanDefinition是否是一个抽象的BeanDefinition信息并且 如果是抽象BeanDefinition那么是否是Class类型的，或者说是否拥有Class
 			// Check already loaded Class if present...
 			// since we possibly can't even load the class file for this Class.
-			Class<?> beanClass = ((AbstractBeanDefinition) beanDef).getBeanClass();
-			metadata = new StandardAnnotationMetadata(beanClass, true);
+			Class<?> beanClass = ((AbstractBeanDefinition) beanDef).getBeanClass();  // 获取字节码
+			metadata = new StandardAnnotationMetadata(beanClass, true);  // 新建一个标准的注解元数据
 		}
 		else {
 			try {
@@ -112,20 +112,20 @@ abstract class ConfigurationClassUtils {
 			}
 		}
 
-		if (isFullConfigurationCandidate(metadata)) {
-			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_FULL);
+		if (isFullConfigurationCandidate(metadata)) { // 判断元数据是否是FUll类型的配置候选
+			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_FULL);  // 设置属性对：configurationClass=full
 		}
-		else if (isLiteConfigurationCandidate(metadata)) {
-			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_LITE);
+		else if (isLiteConfigurationCandidate(metadata)) {  // 判断元数据是否是Lite类型的配置候选
+			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_LITE);  // 设置属性对：configurationClass=lite
 		}
 		else {
 			return false;
 		}
 
 		// It's a full or lite configuration candidate... Let's determine the order value, if any.
-		Integer order = getOrder(metadata);
+		Integer order = getOrder(metadata);  // 是否设置了优先级，从获取到的元数据中获取
 		if (order != null) {
-			beanDef.setAttribute(ORDER_ATTRIBUTE, order);
+			beanDef.setAttribute(ORDER_ATTRIBUTE, order);  // 设置order=order
 		}
 
 		return true;

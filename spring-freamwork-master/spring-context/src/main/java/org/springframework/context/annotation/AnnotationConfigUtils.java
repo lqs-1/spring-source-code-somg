@@ -272,7 +272,7 @@ public abstract class AnnotationConfigUtils {
 			return definition;
 		}
 		boolean proxyTargetClass = scopedProxyMode.equals(ScopedProxyMode.TARGET_CLASS);  // 是代理模式
-		return ScopedProxyCreator.createScopedProxy(definition, registry, proxyTargetClass); // 创建代理
+		return ScopedProxyCreator.createScopedProxy(definition, registry, proxyTargetClass); // 创建并返回代理的BeanDefinition
 	}
 
 	@Nullable

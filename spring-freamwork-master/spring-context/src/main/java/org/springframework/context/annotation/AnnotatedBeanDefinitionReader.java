@@ -242,8 +242,8 @@ public class AnnotatedBeanDefinitionReader {
 		}
 		// 创建对应的BeanDefinition处理者
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
-		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);  // 是否应用代理模式，就在刚刚判断模式的时候，只有两种，单例和代理
-		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
+		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);  // 是否应用代理模式，就在刚刚判断模式的时候，只有两种，单例和代理，如果是代理那么返回的就是代理的BeanDefinition，同时在返回代理BeanDefinition之前，将目标beanDefinition注册到BeanFactory中不是代理模式就返回原对象
+		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry); // 将返回的beanDefinition注册到BeanFacory
 	}
 
 

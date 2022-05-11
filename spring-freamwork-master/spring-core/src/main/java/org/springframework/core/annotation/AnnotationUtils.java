@@ -998,11 +998,11 @@ public abstract class AnnotationUtils {
 	 * @see #getAnnotationAttributes(Annotation)
 	 */
 	public static void validateAnnotation(Annotation annotation) {
-		for (Method method : getAttributeMethods(annotation.annotationType())) {
-			Class<?> returnType = method.getReturnType();
-			if (returnType == Class.class || returnType == Class[].class) {
+		for (Method method : getAttributeMethods(annotation.annotationType())) { // 根据注解的类型获取注解的属性方法
+			Class<?> returnType = method.getReturnType();  // 获取注解方法的值类型的字节码
+			if (returnType == Class.class || returnType == Class[].class) {  // 判断注解方法的值类型是对象数组还是对象
 				try {
-					method.invoke(annotation);
+					method.invoke(annotation); // 如果是对象，那么就需要直接执行这个方法
 				}
 				catch (Throwable ex) {
 					throw new IllegalStateException("Could not obtain annotation attribute value for " + method, ex);
@@ -1848,7 +1848,7 @@ public abstract class AnnotationUtils {
 	 * @since 4.2
 	 */
 	static List<Method> getAttributeMethods(Class<? extends Annotation> annotationType) {
-		List<Method> methods = attributeMethodsCache.get(annotationType);
+		List<Method> methods = attributeMethodsCache.get(annotationType); // 根据注解的种类注解的类型来获取注解的属性名
 		if (methods != null) {
 			return methods;
 		}

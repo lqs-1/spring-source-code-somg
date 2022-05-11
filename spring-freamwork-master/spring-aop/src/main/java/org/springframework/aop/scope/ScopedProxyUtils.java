@@ -91,19 +91,24 @@ public abstract class ScopedProxyUtils {
 		// 设置这个根beanDefinition对象的Primary状态，值从目标beanDefinition中获取，是boolean值
 		proxyDefinition.setPrimary(targetDefinition.isPrimary());
 
+		// 目标beanDefinition是否是抽象的
 		if (targetDefinition instanceof AbstractBeanDefinition) {
+			// 如果是抽象的，就复制目标对象的限定词
 			proxyDefinition.copyQualifiersFrom((AbstractBeanDefinition) targetDefinition);
 		}
 
-		// The target bean should be ignored in favor of the scoped proxy.
+		// The target bean should be ignored in favor of the scoped proxy. 如果不是抽象的 应该忽略目标bean以支持作用域代理
+		// 设置目标beanDefinition自动装配候选为false
 		targetDefinition.setAutowireCandidate(false);
+		// 设置目标beanDefinitionPrimary为false
 		targetDefinition.setPrimary(false);
 
 		// Register the target bean as separate bean in the factory.
+		// 注册目标bean到beanFactory
 		registry.registerBeanDefinition(targetBeanName, targetDefinition);
 
 		// Return the scoped proxy definition as primary bean definition
-		// (potentially an inner bean).
+		// (potentially an inner bean). 返回作用域代理定义作为主beanDefinition，封装代理BeanDefinition的信息
 		return new BeanDefinitionHolder(proxyDefinition, originalBeanName, definition.getAliases());
 	}
 

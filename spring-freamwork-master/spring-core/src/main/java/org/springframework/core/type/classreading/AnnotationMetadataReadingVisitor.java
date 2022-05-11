@@ -105,14 +105,16 @@ public class AnnotationMetadataReadingVisitor extends ClassMetadataReadingVisito
 
 	@Override
 	public boolean hasAnnotation(String annotationName) {
-		return this.annotationSet.contains(annotationName);
+		return this.annotationSet.contains(annotationName); // 是否包含Component注解
 	}
 
 	@Override
 	public boolean hasMetaAnnotation(String metaAnnotationType) {
+		// 获取元数据注解中的注解类型，再从当前的元注解缓存Map中获取所有的注解进行对比
 		Collection<Set<String>> allMetaTypes = this.metaAnnotationMap.values();
 		for (Set<String> metaTypes : allMetaTypes) {
 			if (metaTypes.contains(metaAnnotationType)) {
+				// 如果这些注解里包含类上用的注解，那么返回true
 				return true;
 			}
 		}

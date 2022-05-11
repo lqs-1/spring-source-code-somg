@@ -314,7 +314,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 		if (this.componentsIndex != null && indexSupportsIncludeFilters()) {
 			return addCandidateComponentsFromIndex(this.componentsIndex, basePackage);
 		} else {
-			return scanCandidateComponents(basePackage);
+			return scanCandidateComponents(basePackage);  // 扫描候选的bean
 		}
 	}
 
@@ -415,29 +415,31 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	}
 
 	private Set<BeanDefinition> scanCandidateComponents(String basePackage) {
-		Set<BeanDefinition> candidates = new LinkedHashSet<>();
-		try {
+		Set<BeanDefinition> candidates = new LinkedHashSet<>(); // 创建候选集合空的
+		try { // 拼接搜索路径和规则
 			String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
 					resolveBasePackage(basePackage) + '/' + this.resourcePattern;
+
+			// 获取资源，对应位置对应文件
 			Resource[] resources = getResourcePatternResolver().getResources(packageSearchPath);
 			boolean traceEnabled = logger.isTraceEnabled();
 			boolean debugEnabled = logger.isDebugEnabled();
-			for (Resource resource : resources) {
+			for (Resource resource : resources) { // 遍历资源
 				if (traceEnabled) {
 					logger.trace("Scanning " + resource);
 				}
-				if (resource.isReadable()) {
-					try {
+				if (resource.isReadable()) { // 可读
+					try { // 获取元数据阅读器
 						MetadataReader metadataReader = getMetadataReaderFactory().getMetadataReader(resource);
-						if (isCandidateComponent(metadataReader)) {
+						if (isCandidateComponent(metadataReader)) { // 根据元数据判断是否是候选Bean
 							ScannedGenericBeanDefinition sbd = new ScannedGenericBeanDefinition(metadataReader);
-							sbd.setResource(resource);
-							sbd.setSource(resource);
-							if (isCandidateComponent(sbd)) {
+							sbd.setResource(resource);  // 设置资源
+							sbd.setSource(resource); // 设置源
+							if (isCandidateComponent(sbd)) { // 是候选组件
 								if (debugEnabled) {
 									logger.debug("Identified candidate component class: " + resource);
 								}
-								candidates.add(sbd);
+								candidates.add(sbd);  // 添加到候选里
 							} else {
 								if (debugEnabled) {
 									logger.debug("Ignored because not a concrete top-level class: " + resource);
@@ -491,7 +493,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 				return false;
 			}
 		}
-		for (TypeFilter tf : this.includeFilters) {
+		for (TypeFilter tf : this.includeFilters) {  // 包含的注解
 			if (tf.match(metadataReader, getMetadataReaderFactory())) {
 				return isConditionMatch(metadataReader);
 			}

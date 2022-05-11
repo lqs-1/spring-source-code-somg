@@ -100,7 +100,7 @@ final class PostProcessorRegistrationDelegate {
 			sortPostProcessors(currentRegistryProcessors, beanFactory);
 			// 添加到registryProcessors(用于最后执行postProcessBeanFactory方法)
 			registryProcessors.addAll(currentRegistryProcessors);
-			// 遍历currentRegistryProcessors, 执行postProcessBeanDefinitionRegistry方法
+			// 遍历currentRegistryProcessors, 执行postProcessBeanDefinitionRegistry方法。如果是AnnotationConfigApplicationContext方式，这里面就会有个ConfigurationClassPostProcessor，这个后处理器，会对注解配置的Bean就行解析并添加BeanDefinition
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 			// 执行完毕清空currentRegistryProcessors
 			currentRegistryProcessors.clear();

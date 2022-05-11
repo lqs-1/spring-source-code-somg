@@ -161,10 +161,10 @@ class ConfigurationClassParser {
 
 	public void parse(Set<BeanDefinitionHolder> configCandidates) {
 		for (BeanDefinitionHolder holder : configCandidates) {
-			BeanDefinition bd = holder.getBeanDefinition();
+			BeanDefinition bd = holder.getBeanDefinition();  // 从处理器中获取BeanDefinition
 			try {
-				if (bd instanceof AnnotatedBeanDefinition) {
-					parse(((AnnotatedBeanDefinition) bd).getMetadata(), holder.getBeanName());
+				if (bd instanceof AnnotatedBeanDefinition) {  // 如果bd是注解的bd
+					parse(((AnnotatedBeanDefinition) bd).getMetadata(), holder.getBeanName()); // 解析
 				}
 				else if (bd instanceof AbstractBeanDefinition && ((AbstractBeanDefinition) bd).hasBeanClass()) {
 					parse(((AbstractBeanDefinition) bd).getBeanClass(), holder.getBeanName());
@@ -219,7 +219,7 @@ class ConfigurationClassParser {
 			return;
 		}
 
-		ConfigurationClass existingClass = this.configurationClasses.get(configClass);
+		ConfigurationClass existingClass = this.configurationClasses.get(configClass); // 看看配置类的缓存中有没有这个配置类
 		if (existingClass != null) {
 			if (configClass.isImported()) {
 				if (existingClass.isImported()) {
@@ -236,10 +236,10 @@ class ConfigurationClassParser {
 			}
 		}
 
-		// Recursively process the configuration class and its superclass hierarchy.
-		SourceClass sourceClass = asSourceClass(configClass);
+		// Recursively process the configuration class and its superclass hierarchy. 递归处理配置类及其超类层次结构
+		SourceClass sourceClass = asSourceClass(configClass); // 获取资源
 		do {
-			sourceClass = doProcessConfigurationClass(configClass, sourceClass);
+			sourceClass = doProcessConfigurationClass(configClass, sourceClass);  // 循环操作，匹配注解
 		}
 		while (sourceClass != null);
 
@@ -258,16 +258,16 @@ class ConfigurationClassParser {
 	protected final SourceClass doProcessConfigurationClass(ConfigurationClass configClass, SourceClass sourceClass)
 			throws IOException {
 
-		if (configClass.getMetadata().isAnnotated(Component.class.getName())) {
-			// Recursively process any member (nested) classes first
+		if (configClass.getMetadata().isAnnotated(Component.class.getName())) {  // 是否存在Component注解
+			// Recursively process any member (nested) classes first // 如果存在Component那么就看看类里有没有配置的内部内，如果有直接处理
 			processMemberClasses(configClass, sourceClass);
 		}
 
-		// Process any @PropertySource annotations
+		// Process any @PropertySource annotations 获取并处理任何PropertySource注解
 		for (AnnotationAttributes propertySource : AnnotationConfigUtils.attributesForRepeatable(
 				sourceClass.getMetadata(), PropertySources.class,
 				org.springframework.context.annotation.PropertySource.class)) {
-			if (this.environment instanceof ConfigurableEnvironment) {
+			if (this.environment instanceof ConfigurableEnvironment) {  // 如果当前环境是可配置环境处理这个注解
 				processPropertySource(propertySource);
 			}
 			else {
@@ -278,13 +278,13 @@ class ConfigurationClassParser {
 
 		// Process any @ComponentScan annotations
 		Set<AnnotationAttributes> componentScans = AnnotationConfigUtils.attributesForRepeatable(
-				sourceClass.getMetadata(), ComponentScans.class, ComponentScan.class);
+				sourceClass.getMetadata(), ComponentScans.class, ComponentScan.class);  // 获取componentScan的值
 		if (!componentScans.isEmpty() &&
 				!this.conditionEvaluator.shouldSkip(sourceClass.getMetadata(), ConfigurationPhase.REGISTER_BEAN)) {
 			for (AnnotationAttributes componentScan : componentScans) {
 				// The config class is annotated with @ComponentScan -> perform the scan immediately
 				Set<BeanDefinitionHolder> scannedBeanDefinitions =
-						this.componentScanParser.parse(componentScan, sourceClass.getMetadata().getClassName());
+						this.componentScanParser.parse(componentScan, sourceClass.getMetadata().getClassName());  // 传入ComponentScan和当前的配置类的全限定类名
 				// Check the set of scanned definitions for any further config classes and parse recursively if needed
 				for (BeanDefinitionHolder holder : scannedBeanDefinitions) {
 					BeanDefinition bdCand = holder.getBeanDefinition().getOriginatingBeanDefinition();
@@ -341,13 +341,13 @@ class ConfigurationClassParser {
 	 * Register member (nested) classes that happen to be configuration classes themselves.
 	 */
 	private void processMemberClasses(ConfigurationClass configClass, SourceClass sourceClass) throws IOException {
-		Collection<SourceClass> memberClasses = sourceClass.getMemberClasses();
+		Collection<SourceClass> memberClasses = sourceClass.getMemberClasses();  // 获取内部内
 		if (!memberClasses.isEmpty()) {
 			List<SourceClass> candidates = new ArrayList<>(memberClasses.size());
-			for (SourceClass memberClass : memberClasses) {
-				if (ConfigurationClassUtils.isConfigurationCandidate(memberClass.getMetadata()) &&
+			for (SourceClass memberClass : memberClasses) {  // 遍历内部内
+				if (ConfigurationClassUtils.isConfigurationCandidate(memberClass.getMetadata()) &&  // 判断是不是配置类，如果是且类名和外部配置类的名字要不同
 						!memberClass.getMetadata().getClassName().equals(configClass.getMetadata().getClassName())) {
-					candidates.add(memberClass);
+					candidates.add(memberClass);  // 添加候选
 				}
 			}
 			OrderComparator.sort(candidates);
@@ -627,9 +627,9 @@ class ConfigurationClassParser {
 	 * Factory method to obtain a {@link SourceClass} from a {@link ConfigurationClass}.
 	 */
 	private SourceClass asSourceClass(ConfigurationClass configurationClass) throws IOException {
-		AnnotationMetadata metadata = configurationClass.getMetadata();
-		if (metadata instanceof StandardAnnotationMetadata) {
-			return asSourceClass(((StandardAnnotationMetadata) metadata).getIntrospectedClass());
+		AnnotationMetadata metadata = configurationClass.getMetadata(); // 获取元数据
+		if (metadata instanceof StandardAnnotationMetadata) { // 元数据是否是标准注解元数据
+			return asSourceClass(((StandardAnnotationMetadata) metadata).getIntrospectedClass()); // ((StandardAnnotationMetadata) metadata).getIntrospectedClass()是获取字节码的
 		}
 		return asSourceClass(metadata.getClassName());
 	}
@@ -644,10 +644,10 @@ class ConfigurationClassParser {
 		try {
 			// Sanity test that we can reflectively read annotations,
 			// including Class attributes; if not -> fall back to ASM
-			for (Annotation ann : classType.getAnnotations()) {
-				AnnotationUtils.validateAnnotation(ann);
+			for (Annotation ann : classType.getAnnotations()) { // 从字节码中遍历出类上使用的注解，在来验证这个注解的属性方法值是否是一个对象，如果是对象，直接执行方法
+				AnnotationUtils.validateAnnotation(ann);  // 验证注解
 			}
-			return new SourceClass(classType);
+			return new SourceClass(classType); // 返回资源
 		}
 		catch (Throwable ex) {
 			// Enforce ASM via class name resolution
@@ -955,11 +955,11 @@ class ConfigurationClassParser {
 
 		public Collection<SourceClass> getMemberClasses() throws IOException {
 			Object sourceToProcess = this.source;
-			if (sourceToProcess instanceof Class) {
-				Class<?> sourceClass = (Class<?>) sourceToProcess;
+			if (sourceToProcess instanceof Class) {  // 判断是不是对象Class类型
+				Class<?> sourceClass = (Class<?>) sourceToProcess; // 强转
 				try {
-					Class<?>[] declaredClasses = sourceClass.getDeclaredClasses();
-					List<SourceClass> members = new ArrayList<>(declaredClasses.length);
+					Class<?>[] declaredClasses = sourceClass.getDeclaredClasses(); // 获取对象里的所有类
+					List<SourceClass> members = new ArrayList<>(declaredClasses.length); // 用于存放内部内
 					for (Class<?> declaredClass : declaredClasses) {
 						members.add(asSourceClass(declaredClass));
 					}

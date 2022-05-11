@@ -532,7 +532,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			// 准备刷新的上下文环境，这是初始化前的准备及验证工作
 			prepareRefresh();
 
-			// Tell the subclass to refresh the internal bean factory.
+			// Tell the subclass to refresh the internal bean factory.如果是xml方式，这个方法就是解析xml文件。创建BeanFactory，读取配置文件，注册BeanDefinition，如果是注解方式AnnotationConfigApplicationContext，那么这里就只是获取配置BeanFactory
 			// 初始化BeanFactory，并进行XML文件读取，这里将复用BeanFactory中的配置文件读取解析等功能
 			// 此时xml中定义的配置都已经转换成各种BeanDefinition对象存储在BeanFactory中
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();   // 重点,解析beanDefinition，是XML文件的方式，annotation的不在这里
@@ -548,7 +548,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				postProcessBeanFactory(beanFactory);
 
 				// Invoke factory processors registered as beans in the context.
-				//激活各种BeanFactory处理器
+				//1、激活各种BeanFactory处理器。2、在这里进行AnnotationConfigApplicationContext方式里面的配置的Bean的解析
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
@@ -572,7 +572,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.
-				// 完成BeanFactory的初始化工作,实例化bean也在此步骤完成
+				// 完成BeanFactory的初始化工作,实例化bean也在此步骤完成有百分之九十的对象在这里被创建并放入单例池
 				finishBeanFactoryInitialization(beanFactory);
 
 				// Last step: publish corresponding event.
@@ -715,7 +715,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Register default environment beans.
-		//注册默认的系统环境beans，且是以单例模式进行注册
+		//注册默认的系统环境beans，且是以单例模式进行注册,这里是直接创建到单例池
 		if (!beanFactory.containsLocalBean(ENVIRONMENT_BEAN_NAME)) {
 			beanFactory.registerSingleton(ENVIRONMENT_BEAN_NAME, getEnvironment());
 		}
