@@ -105,7 +105,7 @@ class ConfigurationClassEnhancer {
 						configClass.getName()));
 			}
 			return configClass; // 如果是，直接放走
-		}
+		} // 使用一个CGLIB增强器创建配置类的子类enhancedClass然后返回
 		Class<?> enhancedClass = createClass(newEnhancer(configClass, classLoader)); // 如果配置类不是EnhancedConfiguration类型，那么就用配置类创建一个EnhancedConfiguration类型，这里直接返回的就是代理对象
 		if (logger.isTraceEnabled()) {
 			logger.trace(String.format("Successfully enhanced %s; enhanced class name is: %s",

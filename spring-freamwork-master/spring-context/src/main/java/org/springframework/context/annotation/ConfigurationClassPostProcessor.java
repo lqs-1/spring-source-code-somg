@@ -402,10 +402,10 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			// If a @Configuration class gets proxied, always proxy the target class  如果 @Configuration 类被代理，总是代理目标类
 			beanDef.setAttribute(AutoProxyUtils.PRESERVE_TARGET_CLASS_ATTRIBUTE, Boolean.TRUE);  // 设置属性对， 保留目标类属性=true，也就是将自动代理设置为true
 			try {
-				// Set enhanced subclass of the user-specified bean class 设置用户指定bean类的增强子类
+				// Set enhanced subclass of the user-specified bean class 获取要被CGLIB代理的类的类型，也就是配置类的类型
 				Class<?> configClass = beanDef.resolveBeanClass(this.beanClassLoader);  // 获取增强类，如果没有，那么就是配置类本身，这个就是找到具体要被增强的类
-				if (configClass != null) {
-					Class<?> enhancedClass = enhancer.enhance(configClass, this.beanClassLoader);  // 增强，就是从这个地方，配置类被增强替换成为代理对象，我日，只要用了@Configuration的配置类本身这个类就是一个代理对象
+				if (configClass != null) { // 转换为CGLIB类型
+					Class<?> enhancedClass = enhancer.enhance(configClass, this.beanClassLoader);  // 增强，就是从这个地方，配置类被增强替换成为代理对象类型，我日，只要用了@Configuration的配置类本身这个类就是一个代理对象
 					if (configClass != enhancedClass) {
 						if (logger.isTraceEnabled()) {
 							logger.trace(String.format("Replacing bean definition '%s' existing class '%s' with " +

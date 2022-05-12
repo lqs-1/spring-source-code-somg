@@ -15,12 +15,9 @@ public class AnnotationBeanTest {
 		AnnotationConfigApplicationContext anApp = new AnnotationConfigApplicationContext(AnnotationApplicationContext.class);
 
 
-		AnnotationApplicationContext bean = anApp.getBean(AnnotationApplicationContext.class);
+		UserService bean = anApp.getBean(UserService.class);
 
-
-		System.out.println(bean);
-
-//		UserService bean = annotationConfigApplicationContext.getBean(UserService.class);
+		System.out.println(bean.ToString());
 
 
 //		System.out.println(bean.ToString());
