@@ -250,8 +250,12 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			processConfigBeanDefinitions((BeanDefinitionRegistry) beanFactory);
 		}
 
+		// 增强配置类，如果是FUll配置类，就是说如果是@Configuration注解的类，就给他增强，添加代理对象
+		// 在这一步之前，我们的配置类对象的类型还是原本的类型
+		// 在这一步之后，我们的配置类对象的类型就是代理类型
+		// 这里很核心，如果这个BeanDefinitionRegistryPostProcessor是ConfigurationClassPostProcessor的话进入这个方法里面
 		enhanceConfigurationClasses(beanFactory);
-		beanFactory.addBeanPostProcessor(new ImportAwareBeanPostProcessor(beanFactory));
+		beanFactory.addBeanPostProcessor(new ImportAwareBeanPostProcessor(beanFactory)); // 添加一个BeanPostProcessor为ImportAwareBeanPostProcessor，在bean实例化的时候调用
 	}
 
 	/**
@@ -370,11 +374,11 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	 * @see ConfigurationClassEnhancer
 	 */
 	public void enhanceConfigurationClasses(ConfigurableListableBeanFactory beanFactory) {
-		Map<String, AbstractBeanDefinition> configBeanDefs = new LinkedHashMap<>();
-		for (String beanName : beanFactory.getBeanDefinitionNames()) {
-			BeanDefinition beanDef = beanFactory.getBeanDefinition(beanName);
-			if (ConfigurationClassUtils.isFullConfigurationClass(beanDef)) {
-				if (!(beanDef instanceof AbstractBeanDefinition)) {
+		Map<String, AbstractBeanDefinition> configBeanDefs = new LinkedHashMap<>();  // 用来缓存Full配置类类型的BeanDefinition
+		for (String beanName : beanFactory.getBeanDefinitionNames()) {  // 遍历对应工厂的BeanDefinitionName
+			BeanDefinition beanDef = beanFactory.getBeanDefinition(beanName);  // 获取对应的BeanDefinition
+			if (ConfigurationClassUtils.isFullConfigurationClass(beanDef)) {  // 如果这个类是配置类且是Full模式的
+				if (!(beanDef instanceof AbstractBeanDefinition)) {  // 配置类BeanDefinition是否是抽象类型的BeanDefiniton
 					throw new BeanDefinitionStoreException("Cannot enhance @Configuration bean definition '" +
 							beanName + "' since it is not stored in an AbstractBeanDefinition subclass");
 				}
@@ -384,7 +388,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 							"is a non-static @Bean method with a BeanDefinitionRegistryPostProcessor " +
 							"return type: Consider declaring such methods as 'static'.");
 				}
-				configBeanDefs.put(beanName, (AbstractBeanDefinition) beanDef);
+				configBeanDefs.put(beanName, (AbstractBeanDefinition) beanDef);  // 将符合条件的ConfigurationBeanDefinition缓存起来
 			}
 		}
 		if (configBeanDefs.isEmpty()) {
@@ -392,22 +396,22 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			return;
 		}
 
-		ConfigurationClassEnhancer enhancer = new ConfigurationClassEnhancer();
-		for (Map.Entry<String, AbstractBeanDefinition> entry : configBeanDefs.entrySet()) {
-			AbstractBeanDefinition beanDef = entry.getValue();
-			// If a @Configuration class gets proxied, always proxy the target class
-			beanDef.setAttribute(AutoProxyUtils.PRESERVE_TARGET_CLASS_ATTRIBUTE, Boolean.TRUE);
+		ConfigurationClassEnhancer enhancer = new ConfigurationClassEnhancer();  // 创建配置类的配置类增强器
+		for (Map.Entry<String, AbstractBeanDefinition> entry : configBeanDefs.entrySet()) { // 遍历刚刚缓存的配置类
+			AbstractBeanDefinition beanDef = entry.getValue(); // 获取缓存的BeanDefinition
+			// If a @Configuration class gets proxied, always proxy the target class  如果 @Configuration 类被代理，总是代理目标类
+			beanDef.setAttribute(AutoProxyUtils.PRESERVE_TARGET_CLASS_ATTRIBUTE, Boolean.TRUE);  // 设置属性对， 保留目标类属性=true，也就是将自动代理设置为true
 			try {
-				// Set enhanced subclass of the user-specified bean class
-				Class<?> configClass = beanDef.resolveBeanClass(this.beanClassLoader);
+				// Set enhanced subclass of the user-specified bean class 设置用户指定bean类的增强子类
+				Class<?> configClass = beanDef.resolveBeanClass(this.beanClassLoader);  // 获取增强类，如果没有，那么就是配置类本身，这个就是找到具体要被增强的类
 				if (configClass != null) {
-					Class<?> enhancedClass = enhancer.enhance(configClass, this.beanClassLoader);
+					Class<?> enhancedClass = enhancer.enhance(configClass, this.beanClassLoader);  // 增强，就是从这个地方，配置类被增强替换成为代理对象，我日，只要用了@Configuration的配置类本身这个类就是一个代理对象
 					if (configClass != enhancedClass) {
 						if (logger.isTraceEnabled()) {
 							logger.trace(String.format("Replacing bean definition '%s' existing class '%s' with " +
 									"enhanced class '%s'", entry.getKey(), configClass.getName(), enhancedClass.getName()));
 						}
-						beanDef.setBeanClass(enhancedClass);
+						beanDef.setBeanClass(enhancedClass);  // 修改配置类的真正类型为代理类型
 					}
 				}
 			}

@@ -296,9 +296,9 @@ abstract public class AbstractClassGenerator<T> implements ClassGenerator {
 
 	protected Object create(Object key) {
 		try {
-			ClassLoader loader = getClassLoader();
-			Map<ClassLoader, ClassLoaderData> cache = CACHE;
-			ClassLoaderData data = cache.get(loader);
+			ClassLoader loader = getClassLoader(); // 获取类加载器
+			Map<ClassLoader, ClassLoaderData> cache = CACHE;  // 创建缓存
+			ClassLoaderData data = cache.get(loader); // 获取缓存中的类加载器相关数据
 			if (data == null) {
 				synchronized (AbstractClassGenerator.class) {
 					cache = CACHE;
@@ -311,12 +311,12 @@ abstract public class AbstractClassGenerator<T> implements ClassGenerator {
 					}
 				}
 			}
-			this.key = key;
+			this.key = key; // 获取key对象
 			Object obj = data.get(this, getUseCache());
 			if (obj instanceof Class) {
 				return firstInstance((Class) obj);
 			}
-			return nextInstance(obj);
+			return nextInstance(obj); // 进入实例化对象
 		}
 		catch (RuntimeException | Error ex) {
 			throw ex;

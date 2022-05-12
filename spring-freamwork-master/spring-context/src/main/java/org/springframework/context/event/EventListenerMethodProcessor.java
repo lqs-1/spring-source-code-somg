@@ -87,11 +87,11 @@ public class EventListenerMethodProcessor
 
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-		this.beanFactory = beanFactory;
+		this.beanFactory = beanFactory;  // 获取beanFactory
 
-		Map<String, EventListenerFactory> beans = beanFactory.getBeansOfType(EventListenerFactory.class, false, false);
-		List<EventListenerFactory> factories = new ArrayList<>(beans.values());
-		AnnotationAwareOrderComparator.sort(factories);
+		Map<String, EventListenerFactory> beans = beanFactory.getBeansOfType(EventListenerFactory.class, false, false);  // 从beanFactory中获取所有的EventListenerFactory事件监听器工厂对象
+		List<EventListenerFactory> factories = new ArrayList<>(beans.values());  // 缓存事件监听器工厂对象
+		AnnotationAwareOrderComparator.sort(factories); // 设置感知顺序
 		this.eventListenerFactories = factories;
 	}
 

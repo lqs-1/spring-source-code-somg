@@ -413,7 +413,7 @@ public class Enhancer extends AbstractClassGenerator {
 	 */
 	public Class createClass() {
 		classOnly = true;
-		return (Class) createHelper();
+		return (Class) createHelper(); // createHelper是创建助手，进去
 	}
 
 	/**
@@ -557,16 +557,16 @@ public class Enhancer extends AbstractClassGenerator {
 	}
 
 	private Object createHelper() {
-		preValidate();
-		Object key = KEY_FACTORY.newInstance((superclass != null) ? superclass.getName() : null,
-				ReflectUtils.getNames(interfaces),
+		preValidate(); // 根据条件生成一个key对象
+		Object key = KEY_FACTORY.newInstance((superclass != null) ? superclass.getName() : null,  // 如果原始对象类可以获取到，那就获取全限定名，否则null
+				ReflectUtils.getNames(interfaces), // 获取实现的接口的全限定名
 				filter == ALL_ZERO ? null : new WeakCacheKey<CallbackFilter>(filter),
 				callbackTypes,
 				useFactory,
 				interceptDuringConstruction,
 				serialVersionUID);
 		this.currentKey = key;
-		Object result = super.create(key);
+		Object result = super.create(key);  // 根据生成的key生成具体的代理对象
 		return result;
 	}
 
@@ -779,10 +779,10 @@ public class Enhancer extends AbstractClassGenerator {
 	}
 
 	protected Object nextInstance(Object instance) {
-		EnhancerFactoryData data = (EnhancerFactoryData) instance;
+		EnhancerFactoryData data = (EnhancerFactoryData) instance; // 增强工厂数据
 
 		if (classOnly) {
-			return data.generatedClass;
+			return data.generatedClass;  // 生成class
 		}
 
 		Class[] argumentTypes = this.argumentTypes;

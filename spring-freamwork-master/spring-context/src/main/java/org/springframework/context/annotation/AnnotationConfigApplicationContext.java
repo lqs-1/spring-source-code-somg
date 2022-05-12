@@ -69,6 +69,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 		// 3.CommonAnnotationBeanPostProcessor
 		// 4.EventListenerMethodProcessor
 		// 5.DefaultEventListenerFactory
+		// 在AnnotatedBeanDefinitionReader会生成并注册5个beanDefinition，5.2.4是5个去掉了5.0中RequiredAnnotationBeanPostProcessor
 		/**
 		 * 创建一个读取注解Bean的定义读取器
 		 * 什么是bean定义？BeanDefinition   private final AnnotatedBeanDefinitionReader reader;

@@ -95,7 +95,7 @@ class ConfigurationClassEnhancer {
 	 * @return the enhanced subclass
 	 */
 	public Class<?> enhance(Class<?> configClass, @Nullable ClassLoader classLoader) {
-		if (EnhancedConfiguration.class.isAssignableFrom(configClass)) {
+		if (EnhancedConfiguration.class.isAssignableFrom(configClass)) { // 配置类是否是 增强配置类型 EnhancedConfiguration类型
 			if (logger.isDebugEnabled()) {
 				logger.debug(String.format("Ignoring request to enhance %s as it has " +
 						"already been enhanced. This usually indicates that more than one " +
@@ -104,9 +104,9 @@ class ConfigurationClassEnhancer {
 						"want check your configuration and remove one CCPP if possible",
 						configClass.getName()));
 			}
-			return configClass;
+			return configClass; // 如果是，直接放走
 		}
-		Class<?> enhancedClass = createClass(newEnhancer(configClass, classLoader));
+		Class<?> enhancedClass = createClass(newEnhancer(configClass, classLoader)); // 如果配置类不是EnhancedConfiguration类型，那么就用配置类创建一个EnhancedConfiguration类型，这里直接返回的就是代理对象
 		if (logger.isTraceEnabled()) {
 			logger.trace(String.format("Successfully enhanced %s; enhanced class name is: %s",
 					configClass.getName(), enhancedClass.getName()));
@@ -134,11 +134,11 @@ class ConfigurationClassEnhancer {
 	 * ensuring that callbacks are registered for the new subclass.
 	 */
 	private Class<?> createClass(Enhancer enhancer) {
-		Class<?> subclass = enhancer.createClass();
+		Class<?> subclass = enhancer.createClass();  // 创建 增强对象，代理对象
 		// Registering callbacks statically (as opposed to thread-local)
-		// is critical for usage in an OSGi environment (SPR-5932)...
-		Enhancer.registerStaticCallbacks(subclass, CALLBACKS);
-		return subclass;
+		// is critical for usage in an OSGi environment (SPR-5932)...  // 注册静态回调
+		Enhancer.registerStaticCallbacks(subclass, CALLBACKS); // 注册静态回调, 给这个代理对象设置静态回调
+		return subclass;  // 返回代理对象
 	}
 
 
