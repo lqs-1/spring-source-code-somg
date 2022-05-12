@@ -2,13 +2,14 @@ package spring.demo.test.config;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.stereotype.Component;
 
 /**
  * @author : 李奇凇
  * @date : 2022/5/10 8:40
  * @do :
  */
-//@Component
+@Component
 public class LiqisongBeanPostProcessor implements BeanPostProcessor {
 
 	@Override

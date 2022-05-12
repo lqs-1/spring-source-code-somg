@@ -12,12 +12,18 @@ import spring.demo.test.service.UserService;
 public class AnnotationBeanTest {
 
 	public static void main(String[] args) {
-		AnnotationConfigApplicationContext annotationConfigApplicationContext = new AnnotationConfigApplicationContext(AnnotationApplicationContext.class);
-
-		UserService bean = annotationConfigApplicationContext.getBean(UserService.class);
+		AnnotationConfigApplicationContext anApp = new AnnotationConfigApplicationContext(AnnotationApplicationContext.class);
 
 
-		System.out.println(bean.ToString());
+		AnnotationApplicationContext bean = anApp.getBean(AnnotationApplicationContext.class);
+
+
+		System.out.println(bean);
+
+//		UserService bean = annotationConfigApplicationContext.getBean(UserService.class);
+
+
+//		System.out.println(bean.ToString());
 
 
 

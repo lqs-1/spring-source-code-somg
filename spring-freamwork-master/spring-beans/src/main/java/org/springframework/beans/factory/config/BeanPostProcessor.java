@@ -40,6 +40,12 @@ import org.springframework.lang.Nullable;
  * @see ConfigurableBeanFactory#addBeanPostProcessor
  * @see BeanFactoryPostProcessor
  */
+
+/**
+ * 这个接口是BeanPostProcessor，配置了是给每一个bean用的，他可以直接对bean作用
+ */
+
+
 public interface BeanPostProcessor {
 
 	/**
