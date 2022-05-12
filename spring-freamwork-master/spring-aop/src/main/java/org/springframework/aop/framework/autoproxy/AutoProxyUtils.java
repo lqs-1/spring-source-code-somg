@@ -68,9 +68,9 @@ public abstract class AutoProxyUtils {
 	public static boolean shouldProxyTargetClass(
 			ConfigurableListableBeanFactory beanFactory, @Nullable String beanName) {
 
-		if (beanName != null && beanFactory.containsBeanDefinition(beanName)) {
-			BeanDefinition bd = beanFactory.getBeanDefinition(beanName);
-			return Boolean.TRUE.equals(bd.getAttribute(PRESERVE_TARGET_CLASS_ATTRIBUTE));
+		if (beanName != null && beanFactory.containsBeanDefinition(beanName)) { // 判断beanName是否为空，且beanFactory中是否包含对应的BeanDefinition
+			BeanDefinition bd = beanFactory.getBeanDefinition(beanName); // 获取对应的beanDefinition
+			return Boolean.TRUE.equals(bd.getAttribute(PRESERVE_TARGET_CLASS_ATTRIBUTE));  // 判断对应的beanDefinition中是否有属性 保留目标类属性
 		}
 		return false;
 	}
@@ -112,7 +112,7 @@ public abstract class AutoProxyUtils {
 			ConfigurableListableBeanFactory beanFactory, @Nullable String beanName, Class<?> targetClass) {
 
 		if (beanName != null && beanFactory.containsBeanDefinition(beanName)) {
-			beanFactory.getMergedBeanDefinition(beanName).setAttribute(ORIGINAL_TARGET_CLASS_ATTRIBUTE, targetClass);
+			beanFactory.getMergedBeanDefinition(beanName).setAttribute(ORIGINAL_TARGET_CLASS_ATTRIBUTE, targetClass);  // 给目标类的BeanDefinition设置原本类型
 		}
 	}
 

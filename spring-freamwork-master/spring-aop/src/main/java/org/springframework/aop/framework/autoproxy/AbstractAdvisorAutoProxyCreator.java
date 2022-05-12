@@ -97,10 +97,10 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 		List<Advisor> candidateAdvisors = findCandidateAdvisors();
 		//为当前bean从所有的增强器中选择适用的增强器并应用
 		List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
-		extendAdvisors(eligibleAdvisors);
+		extendAdvisors(eligibleAdvisors); // 扩展增强，添加一个拦截器增强其
 		if (!eligibleAdvisors.isEmpty()) {
 			//对增强器进行排序
-			eligibleAdvisors = sortAdvisors(eligibleAdvisors);
+			eligibleAdvisors = sortAdvisors(eligibleAdvisors); // 至少两个增强。第一个增强是拦截增强，拦截方法
 		}
 		return eligibleAdvisors;
 	}
@@ -127,7 +127,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	protected List<Advisor> findAdvisorsThatCanApply(
 			List<Advisor> candidateAdvisors, Class<?> beanClass, String beanName) {
 
-		ProxyCreationContext.setCurrentProxiedBeanName(beanName);
+		ProxyCreationContext.setCurrentProxiedBeanName(beanName);  // 设置当前代理的 Bean 名称
 		try {
 			//过滤已经得到的advisors，筛选出能够适用于当前bean的advisor
 			return AopUtils.findAdvisorsThatCanApply(candidateAdvisors, beanClass);

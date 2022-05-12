@@ -84,7 +84,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 	 * @see #isEligibleBean
 	 */
 	public List<Advisor> buildAspectJAdvisors() {
-		List<String> aspectNames = this.aspectBeanNames;
+		List<String> aspectNames = this.aspectBeanNames; // 获取aspectBeanName的列表
 
 		if (aspectNames == null) {
 			synchronized (this) {
@@ -147,7 +147,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 		//记录在缓存中
 		List<Advisor> advisors = new ArrayList<>();
 		for (String aspectName : aspectNames) {
-			List<Advisor> cachedAdvisors = this.advisorsCache.get(aspectName);
+			List<Advisor> cachedAdvisors = this.advisorsCache.get(aspectName);  // 从缓存中获取对应的通知
 			if (cachedAdvisors != null) {
 				advisors.addAll(cachedAdvisors);
 			} else {

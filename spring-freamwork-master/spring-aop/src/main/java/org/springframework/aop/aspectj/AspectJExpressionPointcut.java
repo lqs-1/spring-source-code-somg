@@ -269,7 +269,7 @@ public class AspectJExpressionPointcut extends AbstractExpressionPointcut
 
 	@Override
 	public boolean matches(Class<?> targetClass) {
-		PointcutExpression pointcutExpression = obtainPointcutExpression();
+		PointcutExpression pointcutExpression = obtainPointcutExpression(); // 获取切点表达式对象
 		try {
 			try {
 				return pointcutExpression.couldMatchJoinPointsInType(targetClass);
@@ -292,12 +292,12 @@ public class AspectJExpressionPointcut extends AbstractExpressionPointcut
 	@Override
 	public boolean matches(Method method, Class<?> targetClass, boolean hasIntroductions) {
 		obtainPointcutExpression();
-		ShadowMatch shadowMatch = getTargetShadowMatch(method, targetClass);
+		ShadowMatch shadowMatch = getTargetShadowMatch(method, targetClass);  // 根据方法和目标类生成副本方法
 
 		// Special handling for this, target, @this, @target, @annotation
 		// in Spring - we can optimize since we know we have exactly this class,
 		// and there will never be matching subclass at runtime.
-		if (shadowMatch.alwaysMatches()) {
+		if (shadowMatch.alwaysMatches()) {  // 副本方法总是匹配
 			return true;
 		}
 		else if (shadowMatch.neverMatches()) {

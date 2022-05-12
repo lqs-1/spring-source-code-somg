@@ -222,32 +222,32 @@ public abstract class AopUtils {
 	 */
 	public static boolean canApply(Pointcut pc, Class<?> targetClass, boolean hasIntroductions) {
 		Assert.notNull(pc, "Pointcut must not be null");
-		if (!pc.getClassFilter().matches(targetClass)) {
+		if (!pc.getClassFilter().matches(targetClass)) {  // 目标类是否是切点表达式中的类
 			return false;
 		}
 
-		MethodMatcher methodMatcher = pc.getMethodMatcher();
+		MethodMatcher methodMatcher = pc.getMethodMatcher();  // 从切面类获取方法匹配器
 		if (methodMatcher == MethodMatcher.TRUE) {
 			// No need to iterate the methods if we're matching any method anyway...
 			return true;
 		}
 
 		IntroductionAwareMethodMatcher introductionAwareMethodMatcher = null;
-		if (methodMatcher instanceof IntroductionAwareMethodMatcher) {
+		if (methodMatcher instanceof IntroductionAwareMethodMatcher) {  // 方法匹配器 是否是 IntroductionAwareMethodMatcher类型
 			introductionAwareMethodMatcher = (IntroductionAwareMethodMatcher) methodMatcher;
 		}
 
 		Set<Class<?>> classes = new LinkedHashSet<>();
-		if (!Proxy.isProxyClass(targetClass)) {
-			classes.add(ClassUtils.getUserClass(targetClass));
+		if (!Proxy.isProxyClass(targetClass)) {  // 判断目标类是否已经是代理类
+			classes.add(ClassUtils.getUserClass(targetClass));  // 添加目标类到classes缓存中
 		}
-		classes.addAll(ClassUtils.getAllInterfacesForClassAsSet(targetClass));
+		classes.addAll(ClassUtils.getAllInterfacesForClassAsSet(targetClass));  // 获取目标类的所有接口添加到classes缓存中
 
-		for (Class<?> clazz : classes) {
-			Method[] methods = ReflectionUtils.getAllDeclaredMethods(clazz);
+		for (Class<?> clazz : classes) {  // 遍历
+			Method[] methods = ReflectionUtils.getAllDeclaredMethods(clazz);  // 通过反射工具获取目标类中的所有方法
 			for (Method method : methods) {
-				if (introductionAwareMethodMatcher != null ?
-						introductionAwareMethodMatcher.matches(method, targetClass, hasIntroductions) :
+				if (introductionAwareMethodMatcher != null ?  // 方法匹配器是否为null
+						introductionAwareMethodMatcher.matches(method, targetClass, hasIntroductions) :  // 利用方法匹配器匹配目标类中的对应方法
 						methodMatcher.matches(method, targetClass)) {
 					return true;
 				}
@@ -283,9 +283,9 @@ public abstract class AopUtils {
 		if (advisor instanceof IntroductionAdvisor) {
 			return ((IntroductionAdvisor) advisor).getClassFilter().matches(targetClass);
 		}
-		else if (advisor instanceof PointcutAdvisor) {
+		else if (advisor instanceof PointcutAdvisor) { // 是否是切点通知（增强）
 			PointcutAdvisor pca = (PointcutAdvisor) advisor;
-			return canApply(pca.getPointcut(), targetClass, hasIntroductions);
+			return canApply(pca.getPointcut(), targetClass, hasIntroductions);  // 根据切点来判断 目标类是否有 增强，判断目标类是否是切点类
 		}
 		else {
 			// It doesn't have a pointcut so we assume it applies.
@@ -312,7 +312,7 @@ public abstract class AopUtils {
 			if (candidate instanceof IntroductionAdvisor && canApply(candidate, clazz)) {
 				eligibleAdvisors.add(candidate);
 			}
-		}
+		} // 有通知
 		boolean hasIntroductions = !eligibleAdvisors.isEmpty();
 		for (Advisor candidate : candidateAdvisors) {
 			if (candidate instanceof IntroductionAdvisor) {
@@ -322,7 +322,7 @@ public abstract class AopUtils {
 			}
 			//对普通bean的处理，寻找普通的增强
 			if (canApply(candidate, clazz, hasIntroductions)) {
-				eligibleAdvisors.add(candidate);
+				eligibleAdvisors.add(candidate); // 添加增强
 			}
 		}
 		return eligibleAdvisors;
