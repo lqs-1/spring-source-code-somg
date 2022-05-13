@@ -1159,7 +1159,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			Object result = getAutowireCandidateResolver().getLazyResolutionProxyIfNecessary(
 					descriptor, requestingBeanName);
 			if (result == null) {
-				//通用处理逻辑，重点，依赖解析
+				//通用处理逻辑，重点，依赖解析，Autowired注解方式获取的对象
 				result = doResolveDependency(descriptor, requestingBeanName, autowiredBeanNames, typeConverter);
 			}
 			return result;
@@ -1231,7 +1231,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				instanceCandidate = entry.getValue(); // 获取注入对象
 			}
 
-			if (autowiredBeanNames != null) {
+			if (autowiredBeanNames != null) { // 添加到autoredBeanName的缓存中
 				autowiredBeanNames.add(autowiredBeanName);
 			}
 			if (instanceCandidate instanceof Class) {
@@ -1244,10 +1244,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				}
 				result = null;
 			}
-			if (!ClassUtils.isAssignableValue(type, result)) {
+			if (!ClassUtils.isAssignableValue(type, result)) {  // 判断这个对象是否可以给要注入的类型赋值
 				throw new BeanNotOfRequiredTypeException(autowiredBeanName, type, instanceCandidate.getClass());
 			}
-			return result;
+			return result;  // 返回注入对象
 		} finally {
 			ConstructorResolver.setCurrentInjectionPoint(previousInjectionPoint);
 		}

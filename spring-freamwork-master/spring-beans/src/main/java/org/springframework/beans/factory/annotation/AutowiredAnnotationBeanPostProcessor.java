@@ -531,9 +531,9 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 	 */
 	private void registerDependentBeans(@Nullable String beanName, Set<String> autowiredBeanNames) {
 		if (beanName != null) {
-			for (String autowiredBeanName : autowiredBeanNames) {
+			for (String autowiredBeanName : autowiredBeanNames) { // 遍历注入beanName
 				if (this.beanFactory != null && this.beanFactory.containsBean(autowiredBeanName)) {
-					this.beanFactory.registerDependentBean(autowiredBeanName, beanName);
+					this.beanFactory.registerDependentBean(autowiredBeanName, beanName);  // 注册 注入bean
 				}
 				if (logger.isTraceEnabled()) {
 					logger.trace("Autowiring by type from bean name '" + beanName +
@@ -589,7 +589,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 				Set<String> autowiredBeanNames = new LinkedHashSet<>(1);  // 自动装配的beanName
 				Assert.state(beanFactory != null, "No BeanFactory available");
 				TypeConverter typeConverter = beanFactory.getTypeConverter();  // 获取类型转换器
-				try {
+				try { // 返回的是注入对象，Autowired方式
 					value = beanFactory.resolveDependency(desc, beanName, autowiredBeanNames, typeConverter);
 				}
 				catch (BeansException ex) {
@@ -598,12 +598,12 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 				synchronized (this) {
 					if (!this.cached) {
 						if (value != null || this.required) {
-							this.cachedFieldValue = desc;
-							registerDependentBeans(beanName, autowiredBeanNames);
-							if (autowiredBeanNames.size() == 1) {
-								String autowiredBeanName = autowiredBeanNames.iterator().next();
-								if (beanFactory.containsBean(autowiredBeanName) &&
-										beanFactory.isTypeMatch(autowiredBeanName, field.getType())) {
+							this.cachedFieldValue = desc;  // 如果返回的注入对象不是null，那么就缓存依赖描述对象
+							registerDependentBeans(beanName, autowiredBeanNames);  // 注册依赖bean
+							if (autowiredBeanNames.size() == 1) { // 如果依赖BeanName的个数是1
+								String autowiredBeanName = autowiredBeanNames.iterator().next(); // 获取里面的beanName
+								if (beanFactory.containsBean(autowiredBeanName) && // 判断工厂中是否包含这个bean
+										beanFactory.isTypeMatch(autowiredBeanName, field.getType())) {  // 判断工厂中是否有这个bean和注入元数据里的数据类型相匹配
 									this.cachedFieldValue = new ShortcutDependencyDescriptor(
 											desc, autowiredBeanName, field.getType());
 								}
@@ -617,8 +617,8 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 				}
 			}
 			if (value != null) {
-				ReflectionUtils.makeAccessible(field);
-				field.set(bean, value);
+				ReflectionUtils.makeAccessible(field);  // 通过反射打开权限注入元数据对象的访问权限
+				field.set(bean, value); // 将填充对象 填充到 bean里去，这里是通过java的底层反射。使用的是字段访问器给对象设置的属性
 			}
 		}
 	}
