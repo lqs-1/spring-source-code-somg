@@ -65,11 +65,11 @@ public class InjectionMetadata {
 
 	public void checkConfigMembers(RootBeanDefinition beanDefinition) {
 		Set<InjectedElement> checkedElements = new LinkedHashSet<>(this.injectedElements.size());
-		for (InjectedElement element : this.injectedElements) {
-			Member member = element.getMember();
-			if (!beanDefinition.isExternallyManagedConfigMember(member)) {
-				beanDefinition.registerExternallyManagedConfigMember(member);
-				checkedElements.add(element);
+		for (InjectedElement element : this.injectedElements) {  // 从缓存中获取注入元素
+			Member member = element.getMember();  // 遍历每一个注入元素成员
+			if (!beanDefinition.isExternallyManagedConfigMember(member)) {  // 判断是否是外部管理的配置成员
+				beanDefinition.registerExternallyManagedConfigMember(member);  // 如果不是就直接注册成员
+				checkedElements.add(element);  // 添加到检测通过的缓存中
 				if (logger.isTraceEnabled()) {
 					logger.trace("Registered injected element on class [" + this.targetClass.getName() + "]: " + element);
 				}

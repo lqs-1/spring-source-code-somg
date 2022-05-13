@@ -227,7 +227,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
-		InjectionMetadata metadata = findAutowiringMetadata(beanName, beanType, null);
+		InjectionMetadata metadata = findAutowiringMetadata(beanName, beanType, null);  // 查找自动装配元数据
 		metadata.checkConfigMembers(beanDefinition);
 	}
 
@@ -414,18 +414,18 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 
 	private InjectionMetadata findAutowiringMetadata(String beanName, Class<?> clazz, @Nullable PropertyValues pvs) {
 		// Fall back to class name as cache key, for backwards compatibility with custom callers.
-		String cacheKey = (StringUtils.hasLength(beanName) ? beanName : clazz.getName());
+		String cacheKey = (StringUtils.hasLength(beanName) ? beanName : clazz.getName());  // 获取beanName
 		// Quick check on the concurrent map first, with minimal locking.
-		InjectionMetadata metadata = this.injectionMetadataCache.get(cacheKey);
-		if (InjectionMetadata.needsRefresh(metadata, clazz)) {
+		InjectionMetadata metadata = this.injectionMetadataCache.get(cacheKey);  // 根据beanName从依赖元数据缓存中获取依赖元数据
+		if (InjectionMetadata.needsRefresh(metadata, clazz)) {  // 刷新
 			synchronized (this.injectionMetadataCache) {
-				metadata = this.injectionMetadataCache.get(cacheKey);
-				if (InjectionMetadata.needsRefresh(metadata, clazz)) {
+				metadata = this.injectionMetadataCache.get(cacheKey);  // 再次获取
+				if (InjectionMetadata.needsRefresh(metadata, clazz)) { // 再刷新
 					if (metadata != null) {
 						metadata.clear(pvs);
 					}
-					metadata = buildAutowiringMetadata(clazz);
-					this.injectionMetadataCache.put(cacheKey, metadata);
+					metadata = buildAutowiringMetadata(clazz);  // 根据目标类构建自动装配元数据
+					this.injectionMetadataCache.put(cacheKey, metadata);  // 将构建好的依赖元数据放入缓存
 				}
 			}
 		}
@@ -436,10 +436,10 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 		List<InjectionMetadata.InjectedElement> elements = new ArrayList<>();
 		Class<?> targetClass = clazz;
 
-		do {
-			final List<InjectionMetadata.InjectedElement> currElements = new ArrayList<>();
+		do {  // 循环进行解析依赖
 
-			ReflectionUtils.doWithLocalFields(targetClass, field -> {
+			final List<InjectionMetadata.InjectedElement> currElements = new ArrayList<>();
+			ReflectionUtils.doWithLocalFields(targetClass, field -> {  // 获取目标对象中的字段
 				AnnotationAttributes ann = findAutowiredAnnotation(field);
 				if (ann != null) {
 					if (Modifier.isStatic(field.getModifiers())) {
@@ -453,7 +453,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 				}
 			});
 
-			ReflectionUtils.doWithLocalMethods(targetClass, method -> {
+			ReflectionUtils.doWithLocalMethods(targetClass, method -> {  // 获取目标对象中的方法
 				Method bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
 				if (!BridgeMethodResolver.isVisibilityBridgeMethodPair(method, bridgedMethod)) {
 					return;
@@ -488,7 +488,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 
 	@Nullable
 	private AnnotationAttributes findAutowiredAnnotation(AccessibleObject ao) {
-		if (ao.getAnnotations().length > 0) {  // autowiring annotations have to be local
+		if (ao.getAnnotations().length > 0) {  // 自动装配注释的个数 autowiring annotations have to be local
 			for (Class<? extends Annotation> type : this.autowiredAnnotationTypes) {
 				AnnotationAttributes attributes = AnnotatedElementUtils.getMergedAnnotationAttributes(ao, type);
 				if (attributes != null) {
