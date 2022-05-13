@@ -7,6 +7,10 @@
   <version>33</version>
   <packaging>pom</packaging>
 
+  <modules>
+    <module>mybatis-3-mybatis-3.5.9</module>
+  </modules>
+
   <name>mybatis-parent</name>
   <description>The MyBatis parent POM.</description>
   <url>https://www.mybatis.org/</url>

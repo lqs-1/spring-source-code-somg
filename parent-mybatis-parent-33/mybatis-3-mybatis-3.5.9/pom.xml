@@ -3,10 +3,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.mybatis</groupId>
     <artifactId>mybatis-parent</artifactId>
+    <groupId>org.mybatis</groupId>
     <version>33</version>
-    <relativePath>../parent-mybatis-parent-33/pom.xml</relativePath>
   </parent>
 
   <artifactId>mybatis</artifactId>
