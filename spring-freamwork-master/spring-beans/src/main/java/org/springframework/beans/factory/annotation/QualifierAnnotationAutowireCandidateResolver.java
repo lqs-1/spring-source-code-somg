@@ -144,7 +144,7 @@ public class QualifierAnnotationAutowireCandidateResolver extends GenericTypeAwa
 	 */
 	@Override
 	public boolean isAutowireCandidate(BeanDefinitionHolder bdHolder, DependencyDescriptor descriptor) {
-		boolean match = super.isAutowireCandidate(bdHolder, descriptor);
+		boolean match = super.isAutowireCandidate(bdHolder, descriptor);  // 是否是Autowired候选
 		if (match) {
 			match = checkQualifiers(bdHolder, descriptor.getAnnotations());
 			if (match) {
@@ -347,7 +347,7 @@ public class QualifierAnnotationAutowireCandidateResolver extends GenericTypeAwa
 	@Override
 	@Nullable
 	public Object getSuggestedValue(DependencyDescriptor descriptor) {
-		Object value = findValue(descriptor.getAnnotations());
+		Object value = findValue(descriptor.getAnnotations());  // 根据依赖描述符 里面存放的注解来获取对象
 		if (value == null) {
 			MethodParameter methodParam = descriptor.getMethodParameter();
 			if (methodParam != null) {
@@ -363,7 +363,7 @@ public class QualifierAnnotationAutowireCandidateResolver extends GenericTypeAwa
 	@Nullable
 	protected Object findValue(Annotation[] annotationsToSearch) {
 		if (annotationsToSearch.length > 0) {   // qualifier annotations have to be local
-			AnnotationAttributes attr = AnnotatedElementUtils.getMergedAnnotationAttributes(
+			AnnotationAttributes attr = AnnotatedElementUtils.getMergedAnnotationAttributes(  // 依赖描述符的注解里面是否存在@value注解，如果有返回对应的属性值
 					AnnotatedElementUtils.forAnnotations(annotationsToSearch), this.valueAnnotationType);
 			if (attr != null) {
 				return extractValue(attr);

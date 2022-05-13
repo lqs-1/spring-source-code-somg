@@ -11,8 +11,8 @@ public class User {
 	private Cat cat;
 
 
-	private Long id;
-	private String username;
+	private Long id = 1L;
+	private String username = "李奇凇";
 	private Long age;
 
 

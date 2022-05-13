@@ -1152,17 +1152,17 @@ public abstract class AnnotationUtils {
 	static AnnotationAttributes retrieveAnnotationAttributes(@Nullable Object annotatedElement, Annotation annotation,
 			boolean classValuesAsString, boolean nestedAnnotationsAsMap) {
 
-		Class<? extends Annotation> annotationType = annotation.annotationType();
-		AnnotationAttributes attributes = new AnnotationAttributes(annotationType);
+		Class<? extends Annotation> annotationType = annotation.annotationType();  // 获取注解类型
+		AnnotationAttributes attributes = new AnnotationAttributes(annotationType);  // 根据注解的类型创建一个注解属性值对象
 
-		for (Method method : getAttributeMethods(annotationType)) {
+		for (Method method : getAttributeMethods(annotationType)) { // 根据注解类型获取这个注解的所有的属性方法   遍历
 			try {
-				Object attributeValue = method.invoke(annotation);
-				Object defaultValue = method.getDefaultValue();
-				if (defaultValue != null && ObjectUtils.nullSafeEquals(attributeValue, defaultValue)) {
-					attributeValue = new DefaultValueHolder(defaultValue);
+				Object attributeValue = method.invoke(annotation);  // 执行对应的注解属性方法的值
+				Object defaultValue = method.getDefaultValue(); // 获取对应的注解属性方法的默认值
+				if (defaultValue != null && ObjectUtils.nullSafeEquals(attributeValue, defaultValue)) { // 如果默认值和获取到的值相等
+					attributeValue = new DefaultValueHolder(defaultValue);  // 就将默认值封装起来赋值给需要进行属性值封装的对象
 				}
-				attributes.put(method.getName(),
+				attributes.put(method.getName(), // 给需要返回的属性值对象封装当前的属性方法的名字，和属性值
 						adaptValue(annotatedElement, attributeValue, classValuesAsString, nestedAnnotationsAsMap));
 			}
 			catch (Throwable ex) {
@@ -1323,21 +1323,21 @@ public abstract class AnnotationUtils {
 		if (attributes == null) {
 			return;
 		}
-
-		Class<? extends Annotation> annotationType = attributes.annotationType();
+		// 这个注解属性值的后处理器，主要是替换掉注解的值，可扩展点
+		Class<? extends Annotation> annotationType = attributes.annotationType();  // 根据传入的注解属性值对象 获取 注解的类型
 
 		// Track which attribute values have already been replaced so that we can short
 		// circuit the search algorithms.
-		Set<String> valuesAlreadyReplaced = new HashSet<>();
+		Set<String> valuesAlreadyReplaced = new HashSet<>();  // 存放已经被替换的值
 
 		if (!attributes.validated) {
-			// Validate @AliasFor configuration
-			Map<String, List<String>> aliasMap = getAttributeAliasMap(annotationType);
+			// Validate @AliasFor configuration  验证 @AliasFor 配置
+			Map<String, List<String>> aliasMap = getAttributeAliasMap(annotationType); // 根据注解类型获取AliasMap别名对象
 			aliasMap.forEach((attributeName, aliasedAttributeNames) -> {
 				if (valuesAlreadyReplaced.contains(attributeName)) {
 					return;
 				}
-				Object value = attributes.get(attributeName);
+				Object value = attributes.get(attributeName); // 获取别名
 				boolean valuePresent = (value != null && !(value instanceof DefaultValueHolder));
 				for (String aliasedAttributeName : aliasedAttributeNames) {
 					if (valuesAlreadyReplaced.contains(aliasedAttributeName)) {

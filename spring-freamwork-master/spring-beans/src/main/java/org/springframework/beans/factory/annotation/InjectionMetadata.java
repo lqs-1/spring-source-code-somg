@@ -79,15 +79,15 @@ public class InjectionMetadata {
 	}
 
 	public void inject(Object target, @Nullable String beanName, @Nullable PropertyValues pvs) throws Throwable {
-		Collection<InjectedElement> checkedElements = this.checkedElements;
+		Collection<InjectedElement> checkedElements = this.checkedElements;  // 获取自动装配元数据对象集合
 		Collection<InjectedElement> elementsToIterate =
-				(checkedElements != null ? checkedElements : this.injectedElements);
+				(checkedElements != null ? checkedElements : this.injectedElements);  // 如果获取的自动装配的元数据如果为空，就从缓存中获取，不为空就继续使用刚刚获取的
 		if (!elementsToIterate.isEmpty()) {
 			for (InjectedElement element : elementsToIterate) {
 				if (logger.isTraceEnabled()) {
 					logger.trace("Processing injected element of bean '" + beanName + "': " + element);
 				}
-				element.inject(target, beanName, pvs);
+				element.inject(target, beanName, pvs);  // 将自动装配中的元素循环注入到对象中
 			}
 		}
 	}

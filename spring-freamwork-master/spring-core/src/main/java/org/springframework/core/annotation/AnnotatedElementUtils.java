@@ -300,9 +300,9 @@ public abstract class AnnotatedElementUtils {
 	@Nullable
 	public static AnnotationAttributes getMergedAnnotationAttributes(
 			AnnotatedElement element, Class<? extends Annotation> annotationType) {
-
+		// 根据字段元素和自动装配缓存中的注解去搜索字段对应注解的属性值
 		AnnotationAttributes attributes = searchWithGetSemantics(element, annotationType, null,
-				new MergedAnnotationAttributesProcessor());
+				new MergedAnnotationAttributesProcessor());  // 通过注解属性值后处理器进行属性值的处理，根据当前字段和当前字段的注解的属性值
 		AnnotationUtils.postProcessAnnotationAttributes(element, attributes, false, false);
 		return attributes;
 	}
@@ -847,7 +847,7 @@ public abstract class AnnotatedElementUtils {
 	private static <T> T searchWithGetSemantics(AnnotatedElement element,
 			@Nullable Class<? extends Annotation> annotationType,
 			@Nullable String annotationName, Processor<T> processor) {
-
+  		// 去搜索字段对应的注解的属性值
 		return searchWithGetSemantics(element,
 				(annotationType != null ? Collections.singleton(annotationType) : Collections.emptySet()),
 				annotationName, null, processor);
@@ -872,7 +872,7 @@ public abstract class AnnotatedElementUtils {
 			Set<Class<? extends Annotation>> annotationTypes, @Nullable String annotationName,
 			@Nullable Class<? extends Annotation> containerType, Processor<T> processor) {
 
-		try {
+		try {  // 去搜索字段对应的注解的属性值并返回
 			return searchWithGetSemantics(element, annotationTypes, annotationName, containerType, processor,
 					new HashSet<>(), 0);
 		}
@@ -908,11 +908,11 @@ public abstract class AnnotatedElementUtils {
 		if (visited.add(element)) {
 			try {
 				// Start searching within locally declared annotations
-				List<Annotation> declaredAnnotations = Arrays.asList(AnnotationUtils.getDeclaredAnnotations(element));
-				T result = searchWithGetSemanticsInAnnotations(element, declaredAnnotations,
+				List<Annotation> declaredAnnotations = Arrays.asList(AnnotationUtils.getDeclaredAnnotations(element));  // 获取字段元素上面的所有注解并返回一个注解列表
+				T result = searchWithGetSemanticsInAnnotations(element, declaredAnnotations,  // 使用在注释中获取语义进行搜索
 						annotationTypes, annotationName, containerType, processor, visited, metaDepth);
 				if (result != null) {
-					return result;
+					return result; // 返回注解属性值对象
 				}
 
 				if (element instanceof Class) {  // otherwise getAnnotations doesn't return anything new
@@ -970,19 +970,19 @@ public abstract class AnnotatedElementUtils {
 			Processor<T> processor, Set<AnnotatedElement> visited, int metaDepth) {
 
 		// Search in annotations
-		for (Annotation annotation : annotations) {
-			Class<? extends Annotation> currentAnnotationType = annotation.annotationType();
-			if (!AnnotationUtils.isInJavaLangAnnotationPackage(currentAnnotationType)) {
-				if (annotationTypes.contains(currentAnnotationType) ||
-						currentAnnotationType.getName().equals(annotationName) ||
+		for (Annotation annotation : annotations) {  // 遍历注解
+			Class<? extends Annotation> currentAnnotationType = annotation.annotationType();  // 获取注解的类型
+			if (!AnnotationUtils.isInJavaLangAnnotationPackage(currentAnnotationType)) {  // 判断 这个注解  是否是在 Java 语言注解包中
+				if (annotationTypes.contains(currentAnnotationType) ||  // 为了保险，再次判断传过来的注解列表中是否包含当前注解，从类型判断
+						currentAnnotationType.getName().equals(annotationName) ||  // 为了保险，再次判断传过来的注解列表中是否包含当前注解，从名字判断
 						processor.alwaysProcesses()) {
-					T result = processor.process(element, annotation, metaDepth);
+					T result = processor.process(element, annotation, metaDepth); // 满足条件，进行使用传过来的处理器，处理，进去，返回的是注解的属性值对象
 					if (result != null) {
 						if (processor.aggregates() && metaDepth == 0) {
 							processor.getAggregatedResults().add(result);
 						}
 						else {
-							return result;
+							return result;  // 返回封装的注解属性值对象
 						}
 					}
 				}
@@ -1569,7 +1569,7 @@ public abstract class AnnotatedElementUtils {
 		@Override
 		@Nullable
 		public AnnotationAttributes process(@Nullable AnnotatedElement annotatedElement, Annotation annotation, int metaDepth) {
-			return AnnotationUtils.retrieveAnnotationAttributes(annotatedElement, annotation,
+			return AnnotationUtils.retrieveAnnotationAttributes(annotatedElement, annotation,  // 根据字段元素和字段元素的这个注解来检索获取注解属性值
 					this.classValuesAsString, this.nestedAnnotationsAsMap);
 		}
 

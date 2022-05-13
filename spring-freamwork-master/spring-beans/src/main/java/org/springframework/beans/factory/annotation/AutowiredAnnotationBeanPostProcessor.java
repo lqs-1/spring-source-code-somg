@@ -228,7 +228,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
 		InjectionMetadata metadata = findAutowiringMetadata(beanName, beanType, null);  // 查找自动装配元数据
-		metadata.checkConfigMembers(beanDefinition);
+		metadata.checkConfigMembers(beanDefinition);  // 检测成员配置
 	}
 
 	@Override
@@ -369,9 +369,9 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 
 	@Override
 	public PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName) {
-		InjectionMetadata metadata = findAutowiringMetadata(beanName, bean.getClass(), pvs);
+		InjectionMetadata metadata = findAutowiringMetadata(beanName, bean.getClass(), pvs);  // 获取自动装配元数据，之前已经添加到缓存中，可以直接获取，获取所有要自动装配到这个bean的依赖自动装配元数据
 		try {
-			metadata.inject(bean, beanName, pvs);
+			metadata.inject(bean, beanName, pvs);  // 将元数据注入bean中
 		}
 		catch (BeanCreationException ex) {
 			throw ex;
@@ -440,7 +440,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 
 			final List<InjectionMetadata.InjectedElement> currElements = new ArrayList<>();
 			ReflectionUtils.doWithLocalFields(targetClass, field -> {  // 获取目标对象中的字段
-				AnnotationAttributes ann = findAutowiredAnnotation(field);
+				AnnotationAttributes ann = findAutowiredAnnotation(field); // 获取字敦上面符合要求的注解属性值，符合要求的只有Value和Autowired两个注解
 				if (ann != null) {
 					if (Modifier.isStatic(field.getModifiers())) {
 						if (logger.isInfoEnabled()) {
@@ -448,17 +448,17 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 						}
 						return;
 					}
-					boolean required = determineRequiredStatus(ann);
-					currElements.add(new AutowiredFieldElement(field, required));
+					boolean required = determineRequiredStatus(ann);  // 返回的是这个注解是否必须要  就是  required 这个属性名和值是否 一直
+					currElements.add(new AutowiredFieldElement(field, required));  // 往缓存中存入满足条件的 这个元素（字段）
 				}
 			});
 
 			ReflectionUtils.doWithLocalMethods(targetClass, method -> {  // 获取目标对象中的方法
-				Method bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
+				Method bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);  // 获取当前方法
 				if (!BridgeMethodResolver.isVisibilityBridgeMethodPair(method, bridgedMethod)) {
 					return;
 				}
-				AnnotationAttributes ann = findAutowiredAnnotation(bridgedMethod);
+				AnnotationAttributes ann = findAutowiredAnnotation(bridgedMethod); // // 获取方法上面符合要求的注解属性值，符合要求的只有Value和Autowired两个注解，和上面获取字段的属性值的步骤差不多
 				if (ann != null && method.equals(ClassUtils.getMostSpecificMethod(method, clazz))) {
 					if (Modifier.isStatic(method.getModifiers())) {
 						if (logger.isInfoEnabled()) {
@@ -472,25 +472,25 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 									method);
 						}
 					}
-					boolean required = determineRequiredStatus(ann);
-					PropertyDescriptor pd = BeanUtils.findPropertyForMethod(bridgedMethod, clazz);
-					currElements.add(new AutowiredMethodElement(method, required, pd));
+					boolean required = determineRequiredStatus(ann); // 返回的是这个注解是否必须要  就是  required 这个属性名和值是否 一直
+					PropertyDescriptor pd = BeanUtils.findPropertyForMethod(bridgedMethod, clazz);  // 查找方法的属性
+					currElements.add(new AutowiredMethodElement(method, required, pd));  // 往缓存中存入满足条件的 这个元素(方法)
 				}
 			});
 
-			elements.addAll(0, currElements);
-			targetClass = targetClass.getSuperclass();
+			elements.addAll(0, currElements);  // 当前的元素转存到元素列表
+			targetClass = targetClass.getSuperclass(); // 获取超类，继续循环，继续解析注解
 		}
 		while (targetClass != null && targetClass != Object.class);
 
-		return new InjectionMetadata(clazz, elements);
+		return new InjectionMetadata(clazz, elements);  // 返回注入元数据对象
 	}
 
 	@Nullable
 	private AnnotationAttributes findAutowiredAnnotation(AccessibleObject ao) {
-		if (ao.getAnnotations().length > 0) {  // 自动装配注释的个数 autowiring annotations have to be local
-			for (Class<? extends Annotation> type : this.autowiredAnnotationTypes) {
-				AnnotationAttributes attributes = AnnotatedElementUtils.getMergedAnnotationAttributes(ao, type);
+		if (ao.getAnnotations().length > 0) {  // 判断对应字段的注释的个数是否大于0，也就是是否存在注解 autowiring annotations have to be local
+			for (Class<? extends Annotation> type : this.autowiredAnnotationTypes) { // 从缓存中遍历出自动装配注解类型  @Autowired 和 @Value
+				AnnotationAttributes attributes = AnnotatedElementUtils.getMergedAnnotationAttributes(ao, type);  // 循环对对应字段的注解和和缓存中的自动装配注解进行匹配，并返回符合注解的属性值
 				if (attributes != null) {
 					return attributes;
 				}
@@ -578,17 +578,17 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 
 		@Override
 		protected void inject(Object bean, @Nullable String beanName, @Nullable PropertyValues pvs) throws Throwable {
-			Field field = (Field) this.member;
+			Field field = (Field) this.member;  // 获取要注入到对象中的元素的数据域对象，里面存储的是要被条冲的数据的一些信息
 			Object value;
 			if (this.cached) {
 				value = resolvedCachedArgument(beanName, this.cachedFieldValue);
 			}
 			else {
-				DependencyDescriptor desc = new DependencyDescriptor(field, this.required);
-				desc.setContainingClass(bean.getClass());
-				Set<String> autowiredBeanNames = new LinkedHashSet<>(1);
+				DependencyDescriptor desc = new DependencyDescriptor(field, this.required);  // 创建 依赖描述符对象 根据元素属性域和 是否必须属性
+				desc.setContainingClass(bean.getClass()); // 给依赖描述符对象  添加目标bean的类 表示属于这个目标类的属性
+				Set<String> autowiredBeanNames = new LinkedHashSet<>(1);  // 自动装配的beanName
 				Assert.state(beanFactory != null, "No BeanFactory available");
-				TypeConverter typeConverter = beanFactory.getTypeConverter();
+				TypeConverter typeConverter = beanFactory.getTypeConverter();  // 获取类型转换器
 				try {
 					value = beanFactory.resolveDependency(desc, beanName, autowiredBeanNames, typeConverter);
 				}
