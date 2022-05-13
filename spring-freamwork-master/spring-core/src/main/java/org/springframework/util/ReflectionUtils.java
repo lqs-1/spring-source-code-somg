@@ -543,10 +543,10 @@ public abstract class ReflectionUtils {
 	 * @see #doWithMethods
 	 */
 	public static void doWithLocalMethods(Class<?> clazz, MethodCallback mc) {
-		Method[] methods = getDeclaredMethods(clazz);
-		for (Method method : methods) {
+		Method[] methods = getDeclaredMethods(clazz);  // 获取目标类的所有方法。处理final修饰的
+		for (Method method : methods) { // 遍历方法
 			try {
-				mc.doWith(method);
+				mc.doWith(method); // 进一步处理
 			}
 			catch (IllegalAccessException ex) {
 				throw new IllegalStateException("Not allowed to access method '" + method.getName() + "': " + ex);
@@ -714,9 +714,9 @@ public abstract class ReflectionUtils {
 	 * @see #doWithFields
 	 */
 	public static void doWithLocalFields(Class<?> clazz, FieldCallback fc) {
-		for (Field field : getDeclaredFields(clazz)) {
+		for (Field field : getDeclaredFields(clazz)) {  // 获取目标类的所有属性进行遍历
 			try {
-				fc.doWith(field);
+				fc.doWith(field);  // 进一步分析
 			}
 			catch (IllegalAccessException ex) {
 				throw new IllegalStateException("Not allowed to access field '" + field.getName() + "': " + ex);

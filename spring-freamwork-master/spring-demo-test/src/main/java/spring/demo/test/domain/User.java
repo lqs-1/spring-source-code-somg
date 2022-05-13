@@ -1,10 +1,16 @@
 package spring.demo.test.domain;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import spring.demo.test.service.UserService;
 
 @Service
 public class User {
+	@Autowired
+	private Cat cat;
+
+
 	private Long id;
 	private String username;
 	private Long age;

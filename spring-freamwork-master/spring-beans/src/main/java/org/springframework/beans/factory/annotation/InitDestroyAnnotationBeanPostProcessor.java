@@ -125,8 +125,8 @@ public class InitDestroyAnnotationBeanPostProcessor
 
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
-		LifecycleMetadata metadata = findLifecycleMetadata(beanType);
-		metadata.checkConfigMembers(beanDefinition);
+		LifecycleMetadata metadata = findLifecycleMetadata(beanType); // 获取目标类里面的元数据
+		metadata.checkConfigMembers(beanDefinition);  // 检查元数据里的成员配置，用于找出里面的初始化方法和销毁方法
 	}
 
 	@Override
@@ -269,23 +269,23 @@ public class InitDestroyAnnotationBeanPostProcessor
 		}
 
 		public void checkConfigMembers(RootBeanDefinition beanDefinition) {
-			Set<LifecycleElement> checkedInitMethods = new LinkedHashSet<>(this.initMethods.size());
+			Set<LifecycleElement> checkedInitMethods = new LinkedHashSet<>(this.initMethods.size());  // 获取元数据中的初始化方法
 			for (LifecycleElement element : this.initMethods) {
-				String methodIdentifier = element.getIdentifier();
-				if (!beanDefinition.isExternallyManagedInitMethod(methodIdentifier)) {
-					beanDefinition.registerExternallyManagedInitMethod(methodIdentifier);
-					checkedInitMethods.add(element);
+				String methodIdentifier = element.getIdentifier();  // 获取方法的名字
+				if (!beanDefinition.isExternallyManagedInitMethod(methodIdentifier)) {  // 判断是否是外部管理的初始化方法
+					beanDefinition.registerExternallyManagedInitMethod(methodIdentifier);  // 如果不是就注册这个方法
+					checkedInitMethods.add(element); // 并且添加这个方法元素到缓存
 					if (logger.isTraceEnabled()) {
 						logger.trace("Registered init method on class [" + this.targetClass.getName() + "]: " + element);
 					}
 				}
 			}
-			Set<LifecycleElement> checkedDestroyMethods = new LinkedHashSet<>(this.destroyMethods.size());
+			Set<LifecycleElement> checkedDestroyMethods = new LinkedHashSet<>(this.destroyMethods.size());  // 获取元数据中的销毁方法
 			for (LifecycleElement element : this.destroyMethods) {
-				String methodIdentifier = element.getIdentifier();
-				if (!beanDefinition.isExternallyManagedDestroyMethod(methodIdentifier)) {
-					beanDefinition.registerExternallyManagedDestroyMethod(methodIdentifier);
-					checkedDestroyMethods.add(element);
+				String methodIdentifier = element.getIdentifier(); // 获取方法的名字
+				if (!beanDefinition.isExternallyManagedDestroyMethod(methodIdentifier)) {  // 判断是否是外部管理的销毁方法
+					beanDefinition.registerExternallyManagedDestroyMethod(methodIdentifier);  // 如果不是就注册这个方法
+					checkedDestroyMethods.add(element); // 并且添加这个方法元素到缓存
 					if (logger.isTraceEnabled()) {
 						logger.trace("Registered destroy method on class [" + this.targetClass.getName() + "]: " + element);
 					}

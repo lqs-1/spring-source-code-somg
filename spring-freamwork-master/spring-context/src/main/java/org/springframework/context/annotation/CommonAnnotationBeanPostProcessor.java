@@ -294,8 +294,8 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
-		super.postProcessMergedBeanDefinition(beanDefinition, beanType, beanName);
-		InjectionMetadata metadata = findResourceMetadata(beanName, beanType, null);
+		super.postProcessMergedBeanDefinition(beanDefinition, beanType, beanName);  // 执行父类方法，注册初始化方法和销毁方法
+		InjectionMetadata metadata = findResourceMetadata(beanName, beanType, null);  // 获取对应bean的 注入 元数据
 		metadata.checkConfigMembers(beanDefinition);
 	}
 
@@ -337,18 +337,18 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 
 	private InjectionMetadata findResourceMetadata(String beanName, final Class<?> clazz, @Nullable PropertyValues pvs) {
 		// Fall back to class name as cache key, for backwards compatibility with custom callers.
-		String cacheKey = (StringUtils.hasLength(beanName) ? beanName : clazz.getName());
+		String cacheKey = (StringUtils.hasLength(beanName) ? beanName : clazz.getName());  // 获取beanName
 		// Quick check on the concurrent map first, with minimal locking.
-		InjectionMetadata metadata = this.injectionMetadataCache.get(cacheKey);
-		if (InjectionMetadata.needsRefresh(metadata, clazz)) {
+		InjectionMetadata metadata = this.injectionMetadataCache.get(cacheKey); // 从缓存中获取依赖元数据
+		if (InjectionMetadata.needsRefresh(metadata, clazz)) { // 如果缓存中没有元数据就刷新缓存
 			synchronized (this.injectionMetadataCache) {
-				metadata = this.injectionMetadataCache.get(cacheKey);
-				if (InjectionMetadata.needsRefresh(metadata, clazz)) {
+				metadata = this.injectionMetadataCache.get(cacheKey);  // 再次获取
+				if (InjectionMetadata.needsRefresh(metadata, clazz)) {  // 继续刷新
 					if (metadata != null) {
 						metadata.clear(pvs);
 					}
-					metadata = buildResourceMetadata(clazz);
-					this.injectionMetadataCache.put(cacheKey, metadata);
+					metadata = buildResourceMetadata(clazz); // 根据类型构建资源依赖元数据
+					this.injectionMetadataCache.put(cacheKey, metadata);  // 构建好了就放进缓存
 				}
 			}
 		}
@@ -362,75 +362,75 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 		do {
 			final List<InjectionMetadata.InjectedElement> currElements = new ArrayList<>();
 
-			ReflectionUtils.doWithLocalFields(targetClass, field -> {
-				if (webServiceRefClass != null && field.isAnnotationPresent(webServiceRefClass)) {
+			ReflectionUtils.doWithLocalFields(targetClass, field -> {  // 通过反射使用目标类的字段来进一步解析
+				if (webServiceRefClass != null && field.isAnnotationPresent(webServiceRefClass)) {  // 拿到字段判断是否有WebServiceRef注解
 					if (Modifier.isStatic(field.getModifiers())) {
 						throw new IllegalStateException("@WebServiceRef annotation is not supported on static fields");
 					}
-					currElements.add(new WebServiceRefElement(field, field, null));
+					currElements.add(new WebServiceRefElement(field, field, null)); // 添加到当前元素缓存
 				}
-				else if (ejbRefClass != null && field.isAnnotationPresent(ejbRefClass)) {
+				else if (ejbRefClass != null && field.isAnnotationPresent(ejbRefClass)) {  // 判断字段是否有EjbRefClass注解
 					if (Modifier.isStatic(field.getModifiers())) {
 						throw new IllegalStateException("@EJB annotation is not supported on static fields");
 					}
-					currElements.add(new EjbRefElement(field, field, null));
+					currElements.add(new EjbRefElement(field, field, null));  // 添加到当前元素缓存
 				}
-				else if (field.isAnnotationPresent(Resource.class)) {
+				else if (field.isAnnotationPresent(Resource.class)) {  // 判断字段手否有Resource注解
 					if (Modifier.isStatic(field.getModifiers())) {
 						throw new IllegalStateException("@Resource annotation is not supported on static fields");
 					}
-					if (!this.ignoredResourceTypes.contains(field.getType().getName())) {
-						currElements.add(new ResourceElement(field, field, null));
+					if (!this.ignoredResourceTypes.contains(field.getType().getName())) {  // 判断字段类型是否是要被忽略的类型
+						currElements.add(new ResourceElement(field, field, null)); // 添加到当前元素缓存
 					}
 				}
 			});
 
-			ReflectionUtils.doWithLocalMethods(targetClass, method -> {
+			ReflectionUtils.doWithLocalMethods(targetClass, method -> {  // 通过反射对目标类的方法进一步分析
 				Method bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
 				if (!BridgeMethodResolver.isVisibilityBridgeMethodPair(method, bridgedMethod)) {
 					return;
 				}
-				if (method.equals(ClassUtils.getMostSpecificMethod(method, clazz))) {
-					if (webServiceRefClass != null && bridgedMethod.isAnnotationPresent(webServiceRefClass)) {
+				if (method.equals(ClassUtils.getMostSpecificMethod(method, clazz))) {  // 如果获取的方法确实是这个类中的
+					if (webServiceRefClass != null && bridgedMethod.isAnnotationPresent(webServiceRefClass)) {  // 判断方法上是否具有WebServiceRef注解
 						if (Modifier.isStatic(method.getModifiers())) {
 							throw new IllegalStateException("@WebServiceRef annotation is not supported on static methods");
 						}
 						if (method.getParameterCount() != 1) {
 							throw new IllegalStateException("@WebServiceRef annotation requires a single-arg method: " + method);
 						}
-						PropertyDescriptor pd = BeanUtils.findPropertyForMethod(bridgedMethod, clazz);
-						currElements.add(new WebServiceRefElement(method, bridgedMethod, pd));
+						PropertyDescriptor pd = BeanUtils.findPropertyForMethod(bridgedMethod, clazz); // 查出方法的属性
+						currElements.add(new WebServiceRefElement(method, bridgedMethod, pd)); // 如果有就添加到当前元素
 					}
-					else if (ejbRefClass != null && bridgedMethod.isAnnotationPresent(ejbRefClass)) {
+					else if (ejbRefClass != null && bridgedMethod.isAnnotationPresent(ejbRefClass)) {  // 判断方式是否有EjbRefClass注解
 						if (Modifier.isStatic(method.getModifiers())) {
 							throw new IllegalStateException("@EJB annotation is not supported on static methods");
 						}
 						if (method.getParameterCount() != 1) {
 							throw new IllegalStateException("@EJB annotation requires a single-arg method: " + method);
 						}
-						PropertyDescriptor pd = BeanUtils.findPropertyForMethod(bridgedMethod, clazz);
-						currElements.add(new EjbRefElement(method, bridgedMethod, pd));
+						PropertyDescriptor pd = BeanUtils.findPropertyForMethod(bridgedMethod, clazz);  // 查出方法的属性
+						currElements.add(new EjbRefElement(method, bridgedMethod, pd)); // 如果有就添加到当前元素
 					}
-					else if (bridgedMethod.isAnnotationPresent(Resource.class)) {
+					else if (bridgedMethod.isAnnotationPresent(Resource.class)) {  // 判断方法是否有Resource注解
 						if (Modifier.isStatic(method.getModifiers())) {
 							throw new IllegalStateException("@Resource annotation is not supported on static methods");
 						}
-						Class<?>[] paramTypes = method.getParameterTypes();
-						if (paramTypes.length != 1) {
+						Class<?>[] paramTypes = method.getParameterTypes(); // 获取方法中的形式参数的类型数组
+						if (paramTypes.length != 1) { // 如果不是一个。直接报错，因为Resource注解只能接受一个参数的方法
 							throw new IllegalStateException("@Resource annotation requires a single-arg method: " + method);
 						}
-						if (!this.ignoredResourceTypes.contains(paramTypes[0].getName())) {
-							PropertyDescriptor pd = BeanUtils.findPropertyForMethod(bridgedMethod, clazz);
-							currElements.add(new ResourceElement(method, bridgedMethod, pd));
+						if (!this.ignoredResourceTypes.contains(paramTypes[0].getName())) {  // 如果这个
+							PropertyDescriptor pd = BeanUtils.findPropertyForMethod(bridgedMethod, clazz); // 查出方法的属性
+							currElements.add(new ResourceElement(method, bridgedMethod, pd)); // 添加到当前属性
 						}
 					}
 				}
 			});
 
-			elements.addAll(0, currElements);
-			targetClass = targetClass.getSuperclass();
+			elements.addAll(0, currElements);  // 将所有的符合要求的元素转存
+			targetClass = targetClass.getSuperclass(); // 获取超类，也就是父类，所有对象在没有继承关系的前提下。超类都是Object
 		}
-		while (targetClass != null && targetClass != Object.class);
+		while (targetClass != null && targetClass != Object.class);  // 判断是否继承了某个类，如果继承了，将会继续循环从父类中继续寻找
 
 		return new InjectionMetadata(clazz, elements);
 	}

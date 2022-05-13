@@ -159,7 +159,7 @@ public abstract class AnnotationConfigUtils {
 		}
 		// 创建一个BeanDefinition处理这集合，大小为8
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
-		// 1. 注册ConfigurationClassPostProcessor类型的beanDefinition
+		// 1. 注册ConfigurationClassPostProcessor类型的beanDefinition，这个用于解析配置类的，从配置类开始读取所有的beanDefinition
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			//需要注意的是ConfigurationClassPostProcessor的类型是BeanDefinitionRegistryPostProcessor
 			//而BeanDefinitionRegistryPostProcessor 最终实现BeanFactoryPostProcessor这个接口
@@ -168,14 +168,14 @@ public abstract class AnnotationConfigUtils {
 			def.setSource(source);
 			beanDefs.add(registerPostProcessor(registry, def, CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
-		// 2. 注册AutowiredAnnotationBeanPostProcessor类型的BeanDefinition
+		// 2. 注册AutowiredAnnotationBeanPostProcessor类型的BeanDefinition，处理自动装配Autowired，Value等等
 		if (!registry.containsBeanDefinition(AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(AutowiredAnnotationBeanPostProcessor.class);
 			def.setSource(source);
 			beanDefs.add(registerPostProcessor(registry, def, AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
 
-		// 3. 注册CommonAnnotationBeanPostProcessor类型的beanDefinition
+		// 3. 注册CommonAnnotationBeanPostProcessor类型的beanDefinition，处理Resource等等
 		if (jsr250Present && !registry.containsBeanDefinition(COMMON_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(CommonAnnotationBeanPostProcessor.class);
 			def.setSource(source);
