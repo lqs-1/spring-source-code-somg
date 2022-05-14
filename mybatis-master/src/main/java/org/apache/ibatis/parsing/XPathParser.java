@@ -131,7 +131,7 @@ public class XPathParser {
 
   public XPathParser(InputStream inputStream, boolean validation, Properties variables, EntityResolver entityResolver) {
     commonConstructor(validation, variables, entityResolver);
-    this.document = createDocument(new InputSource(inputStream));
+    this.document = createDocument(new InputSource(inputStream));  // 根据配置文件的输入流创建文档对象并且保存
   }
 
   public XPathParser(Document document, boolean validation, Properties variables, EntityResolver entityResolver) {
@@ -220,16 +220,16 @@ public class XPathParser {
   }
 
   public XNode evalNode(String expression) {
-    return evalNode(document, expression);
+    return evalNode(document, expression);  // 获取节点数据从配置文件文档中，根据表达式获取对应的文档节点数据
   }
 
 	//返回节点
   public XNode evalNode(Object root, String expression) {
-    Node node = (Node) evaluate(expression, root, XPathConstants.NODE);
+    Node node = (Node) evaluate(expression, root, XPathConstants.NODE); // 获取节点数据从配置文件文档中，根据表达式获取对应的文档节点数据
     if (node == null) {
       return null;
     }
-    return new XNode(this, node, variables);
+    return new XNode(this, node, variables);  // 将节点封装成对象，还原数据
   }
 
   private Object evaluate(String expression, Object root, QName returnType) {

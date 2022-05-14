@@ -92,14 +92,14 @@ public class XMLConfigBuilder extends BaseBuilder {
     ErrorContext.instance().resource("SQL Mapper Configuration");
     //将Properties全部设置到Configuration里面去
     this.configuration.setVariables(props);
-    this.parsed = false;
-    this.environment = environment;
-    this.parser = parser;
+    this.parsed = false;  // 设置解析状态为false
+    this.environment = environment;  // 设置环境
+    this.parser = parser; // Xpath解析器进行保存
   }
 
   //解析配置
   public Configuration parse() {
-    //如果已经解析过了，报错
+    //如果已经解析过了，报错，这种方式可以防止多个用户同时操作，比如，用户A正在使用解析器去处理一条删除语句，这个是否如果用户B也要操作删除语句，那么就会抛异常，如果是true就表示当前有人在用
     if (parsed) {
       throw new BuilderException("Each XMLConfigBuilder can only be used once.");
     }
@@ -124,7 +124,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 //  </mappers>
 //  </configuration>
 
-    //根节点是configuration
+    //根节点是configuration，
     parseConfiguration(parser.evalNode("/configuration"));
     return configuration;
   }
@@ -132,7 +132,7 @@ public class XMLConfigBuilder extends BaseBuilder {
   //解析配置
   private void parseConfiguration(XNode root) {
     try {
-      //分步骤解析
+      //分步骤解析，root就是根节点。里面有所有的数据
       //issue #117 read properties first
       //1.properties
       propertiesElement(root.evalNode("properties"));

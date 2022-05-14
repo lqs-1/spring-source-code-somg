@@ -74,7 +74,7 @@ public class SqlSessionFactoryBuilder {
 
   //以下3个方法都是调用下面第8种方法
   public SqlSessionFactory build(InputStream inputStream) {
-    return build(inputStream, null, null);
+    return build(inputStream, null, null); // 执行构造方法
   }
 
   public SqlSessionFactory build(InputStream inputStream, String environment) {
@@ -88,8 +88,8 @@ public class SqlSessionFactoryBuilder {
   //第8种方法和第4种方法差不多，Reader换成了InputStream
   public SqlSessionFactory build(InputStream inputStream, String environment, Properties properties) {
     try {
-      XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, environment, properties);
-      return build(parser.parse());
+      XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, environment, properties);  // 对解析器进行初始化，里面封装了xml配置文件的数据
+      return build(parser.parse());  // 先进行解析资源，解析出来的是一个Configuration对象，然后再对这个对象进行构建
     } catch (Exception e) {
       throw ExceptionFactory.wrapException("Error building SqlSession.", e);
     } finally {

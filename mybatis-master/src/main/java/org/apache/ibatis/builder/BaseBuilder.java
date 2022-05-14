@@ -36,15 +36,15 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
  *
  */
 public abstract class BaseBuilder {
-  //需要配置，类型别名注册，类型处理器注册3个东西
+  //需要 配置，类型别名注册，类型处理器注册 3个东西
   protected final Configuration configuration;
   protected final TypeAliasRegistry typeAliasRegistry;
   protected final TypeHandlerRegistry typeHandlerRegistry;
 
-  public BaseBuilder(Configuration configuration) {
-    this.configuration = configuration;
-    this.typeAliasRegistry = this.configuration.getTypeAliasRegistry();
-    this.typeHandlerRegistry = this.configuration.getTypeHandlerRegistry();
+  public BaseBuilder(Configuration configuration) { // 初始化配置对象、类型别名注册对象，类型处理器注册对象
+    this.configuration = configuration;  // 将传进来的Configuration对象赋值
+    this.typeAliasRegistry = this.configuration.getTypeAliasRegistry(); // 从configuration对象中获取类型别名注册对象
+    this.typeHandlerRegistry = this.configuration.getTypeHandlerRegistry(); // 从configuration对象中获取类型处理器注册对象
   }
 
   public Configuration getConfiguration() {
