@@ -44,7 +44,7 @@ public class UnpooledDataSourceFactory implements DataSourceFactory {
   @Override
   public void setProperties(Properties properties) {
     Properties driverProperties = new Properties();
-    MetaObject metaDataSource = SystemMetaObject.forObject(dataSource);
+    MetaObject metaDataSource = SystemMetaObject.forObject(dataSource);  // 创建元数据对象，用来填充值的
     for (Object key : properties.keySet()) {
       String propertyName = (String) key;
       //作为可选项,你可以传递数据库驱动的属性。要这样做,属性的前缀是以“driver.”开 头的,例如
@@ -56,7 +56,7 @@ public class UnpooledDataSourceFactory implements DataSourceFactory {
     	  //如果UnpooledDataSource有相应的setter函数，则设置它
         String value = (String) properties.get(propertyName);
         Object convertedValue = convertValue(metaDataSource, propertyName, value);
-        metaDataSource.setValue(propertyName, convertedValue);
+        metaDataSource.setValue(propertyName, convertedValue);  // 设置值
       } else {
         throw new DataSourceException("Unknown DataSource property: " + propertyName);
       }
@@ -74,7 +74,7 @@ public class UnpooledDataSourceFactory implements DataSourceFactory {
   //根据setter的类型,将配置文件中的值强转成相应的类型
   private Object convertValue(MetaObject metaDataSource, String propertyName, String value) {
     Object convertedValue = value;
-    Class<?> targetType = metaDataSource.getSetterType(propertyName);
+    Class<?> targetType = metaDataSource.getSetterType(propertyName);  // 获取对应类型
     if (targetType == Integer.class || targetType == int.class) {
       convertedValue = Integer.valueOf(value);
     } else if (targetType == Long.class || targetType == long.class) {

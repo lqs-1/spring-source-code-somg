@@ -95,14 +95,14 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
   }
 
   private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {
-    Transaction tx = null;
+    Transaction tx = null; // 事务
     try {
-      final Environment environment = configuration.getEnvironment();
-      final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
+      final Environment environment = configuration.getEnvironment();  // 获取环境
+      final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);  // 获取环境中的事务工厂对象
       //通过事务工厂来产生一个事务
-      tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);
+      tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);  // 根据数据源在事务工厂中创建一个事务对象，一个事务
       //生成一个执行器(事务包含在执行器里)
-      final Executor executor = configuration.newExecutor(tx, execType);
+      final Executor executor = configuration.newExecutor(tx, execType);  // 从configuration中创建一个执行器，包含执行类型和事务的
       //然后产生一个DefaultSqlSession
       return new DefaultSqlSession(configuration, executor, autoCommit);
     } catch (Exception e) {

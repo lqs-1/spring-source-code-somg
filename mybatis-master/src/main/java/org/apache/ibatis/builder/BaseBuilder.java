@@ -124,7 +124,7 @@ public abstract class BaseBuilder {
       return null;
     }
     try {
-      return resolveAlias(alias);
+      return resolveAlias(alias);  // 根据类型解析出来一个对象类型
     } catch (Exception e) {
       throw new BuilderException("Error resolving class. Cause: " + e, e);
     }
@@ -163,6 +163,6 @@ public abstract class BaseBuilder {
   }
 
   protected Class<?> resolveAlias(String alias) {
-    return typeAliasRegistry.resolveAlias(alias);
+    return typeAliasRegistry.resolveAlias(alias);  // 从刚开始初始化configuration的时候赋值的类型别名注册中 获取到对应的类型
   }
 }

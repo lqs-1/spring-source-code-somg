@@ -130,7 +130,7 @@ public class XPathParser {
   }
 
   public XPathParser(InputStream inputStream, boolean validation, Properties variables, EntityResolver entityResolver) {
-    commonConstructor(validation, variables, entityResolver);
+    commonConstructor(validation, variables, entityResolver);  // 调用方法进入
     this.document = createDocument(new InputSource(inputStream));  // 根据配置文件的输入流创建文档对象并且保存
   }
 
@@ -220,12 +220,12 @@ public class XPathParser {
   }
 
   public XNode evalNode(String expression) {
-    return evalNode(document, expression);  // 获取节点数据从配置文件文档中，根据表达式获取对应的文档节点数据
+    return evalNode(document, expression);  // 获取节点数据从配置文件文档中，根据表达式获取对应的文档节点所有的数据
   }
 
 	//返回节点
   public XNode evalNode(Object root, String expression) {
-    Node node = (Node) evaluate(expression, root, XPathConstants.NODE); // 获取节点数据从配置文件文档中，根据表达式获取对应的文档节点数据
+    Node node = (Node) evaluate(expression, root, XPathConstants.NODE); // 获取节点数据从配置文件文档中，根据表达式获取对应的文档节点数据， XPathConstants.NODE表示返回类型是一个节点数据
     if (node == null) {
       return null;
     }
@@ -285,8 +285,8 @@ public class XPathParser {
   }
 
   private void commonConstructor(boolean validation, Properties variables, EntityResolver entityResolver) {
-    this.validation = validation;
-    this.entityResolver = entityResolver;
+    this.validation = validation;  // 验证属性变量赋值
+    this.entityResolver = entityResolver;  // 实体解析器
     this.variables = variables;
 	//共通构造函数，除了把参数都设置到实例变量里面去以外，还初始化了XPath
     XPathFactory factory = XPathFactory.newInstance();

@@ -177,7 +177,7 @@ public class TypeAliasRegistry {
       throw new TypeException("The parameter alias cannot be null");
     }
     // issue #748
-    String key = alias.toLowerCase(Locale.ENGLISH);
+    String key = alias.toLowerCase(Locale.ENGLISH);  // 获取别名
     //如果已经存在key了，且value和之前不一致，报错
     //这里逻辑略显复杂，感觉没必要，一个key对一个value呗，存在key直接报错不就得了
     if (TYPE_ALIASES.containsKey(key) && TYPE_ALIASES.get(key) != null && !TYPE_ALIASES.get(key).equals(value)) {

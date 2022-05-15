@@ -126,11 +126,11 @@ public class Resources {
    * @throws java.io.IOException If the resource cannot be found or read
    */
   public static Properties getResourceAsProperties(String resource) throws IOException {
-    Properties props = new Properties();
-    InputStream in = getResourceAsStream(resource);
-    props.load(in);
-    in.close();
-    return props;
+    Properties props = new Properties();  // 新建一个属性对象
+    InputStream in = getResourceAsStream(resource);  // 获取resource对应的值的文件的输入流
+    props.load(in);  // 并将输入流数据加载到属性对象中
+    in.close();  // 关闭输入流
+    return props;  // 返回封装好的属性对象
   }
 
   /*

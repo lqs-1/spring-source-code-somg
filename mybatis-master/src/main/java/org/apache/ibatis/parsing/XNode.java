@@ -47,12 +47,12 @@ public class XNode {
 
   //在构造时就把一些信息（属性，body）全部解析好，以便我们直接通过getter函数取得
   public XNode(XPathParser xpathParser, Node node, Properties variables) {
-    this.xpathParser = xpathParser;
-    this.node = node;
-    this.name = node.getNodeName();
-    this.variables = variables;
-    this.attributes = parseAttributes(node);
-    this.body = parseBody(node);
+    this.xpathParser = xpathParser;  // 获取当前节点的所有的数据
+    this.node = node;  // 获取当前节点
+    this.name = node.getNodeName();  // 获取节点名称
+    this.variables = variables;  // 获取节点变量值
+    this.attributes = parseAttributes(node);  // 获取节点属性值
+    this.body = parseBody(node);  // 获取节点的主体数据
   }
 
   public XNode newXNode(Node node) {
@@ -238,7 +238,7 @@ public class XNode {
   }
 
   public String getStringAttribute(String name, String def) {
-    String value = attributes.getProperty(name);
+    String value = attributes.getProperty(name); // 根据属性的名字去获取当前节点的对应属性的值
     if (value == null) {
       return def;
     } else {
@@ -314,7 +314,7 @@ public class XNode {
   //得到孩子，原理是调用Node.getChildNodes
   public List<XNode> getChildren() {
     List<XNode> children = new ArrayList<XNode>();
-    NodeList nodeList = node.getChildNodes();
+    NodeList nodeList = node.getChildNodes();  // 获取当前节点的子节点
     if (nodeList != null) {
       for (int i = 0, n = nodeList.getLength(); i < n; i++) {
         Node node = nodeList.item(i);
@@ -326,9 +326,9 @@ public class XNode {
     return children;
   }
 
-  //得到孩子，返回Properties，孩子的格式肯定都有name,value属性
+  //得到孩子，返回Properties，孩子的格式肯定都有name,value属性,这种是直接再mybatis核心配置文件里配置的键值对的方式，而不是引入properties文件的形式的解析
   public Properties getChildrenAsProperties() {
-    Properties properties = new Properties();
+    Properties properties = new Properties();   // 创建一个properties对象
     for (XNode child : getChildren()) {
       String name = child.getStringAttribute("name");
       String value = child.getStringAttribute("value");

@@ -82,18 +82,24 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   public XMLConfigBuilder(InputStream inputStream, String environment, Properties props) {
     this(new XPathParser(inputStream, true, props, new XMLMapperEntityResolver()), environment, props);
+    /**
+     * 创建XpathParser的时候有三个重要的参数
+     * 1、配置文件的输入流
+     * 2、一个boolean值，在后面赋值表示是否验证什么
+     * 3、XML映射器实体解析器
+     */
   }
 
-  //上面6个构造函数最后都合流到这个函数，传入XPathParser
+  //上面6个构造函数最后都合流到这个函数，传入XPathParser，这个对象里面有很多的东西，比如配置文件的资源数据，还有xpath对象，xpath对象是用来解析html和xml这种文档的
   private XMLConfigBuilder(XPathParser parser, String environment, Properties props) {
     //首先调用父类初始化Configuration
     super(new Configuration());
     //错误上下文设置成SQL Mapper Configuration(XML文件配置),以便后面出错了报错用吧
     ErrorContext.instance().resource("SQL Mapper Configuration");
     //将Properties全部设置到Configuration里面去
-    this.configuration.setVariables(props);
+    this.configuration.setVariables(props);  // new SqlSessionFactoryBuilder().build(inputStream);这个后面添加的属性会直接加到configuration对象中
     this.parsed = false;  // 设置解析状态为false
-    this.environment = environment;  // 设置环境
+    this.environment = environment;  // 设置环境，这个环境是环境的名字，是配置文件里的，设置数据源的哪个环境
     this.parser = parser; // Xpath解析器进行保存
   }
 
@@ -124,7 +130,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 //  </mappers>
 //  </configuration>
 
-    //根节点是configuration，
+    //根节点是configuration，重点，这个evalNode会在后面经常用到，这个地方解析出来的是一个configuration节点的数据，"/configuration" 是节点表达式
     parseConfiguration(parser.evalNode("/configuration"));
     return configuration;
   }
@@ -152,7 +158,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       //8.databaseIdProvider
       databaseIdProviderElement(root.evalNode("databaseIdProvider"));
       //9.类型处理器
-      typeHandlerElement(root.evalNode("typeHandlers"));
+       typeHandlerElement(root.evalNode("typeHandlers"));
       //10.映射器
       mapperElement(root.evalNode("mappers"));
     } catch (Exception e) {
@@ -186,7 +192,7 @@ public class XMLConfigBuilder extends BaseBuilder {
           String alias = child.getStringAttribute("alias");
           String type = child.getStringAttribute("type");
           try {
-            Class<?> clazz = Resources.classForName(type);
+            Class<?> clazz = Resources.classForName(type);  // 拿到别名原来对象的class对象
             //根据Class名字来注册类型别名
             //（二）调用TypeAliasRegistry.registerAlias
             if (alias == null) {
@@ -213,12 +219,12 @@ public class XMLConfigBuilder extends BaseBuilder {
   private void pluginElement(XNode parent) throws Exception {
     if (parent != null) {
       for (XNode child : parent.getChildren()) {
-        String interceptor = child.getStringAttribute("interceptor");
-        Properties properties = child.getChildrenAsProperties();
-        Interceptor interceptorInstance = (Interceptor) resolveClass(interceptor).newInstance();
-        interceptorInstance.setProperties(properties);
+        String interceptor = child.getStringAttribute("interceptor");  // 获取插件的类，全限定名
+        Properties properties = child.getChildrenAsProperties();  // 获取子节点的数据
+        Interceptor interceptorInstance = (Interceptor) resolveClass(interceptor).newInstance();  // 获取插件的实例化出来的拦截器对象
+        interceptorInstance.setProperties(properties);  // 给拦截器填充属性
         //调用InterceptorChain.addInterceptor
-        configuration.addInterceptor(interceptorInstance);
+        configuration.addInterceptor(interceptorInstance);  // 给configuration添加拦截器
       }
     }
   }
@@ -256,30 +262,30 @@ public class XMLConfigBuilder extends BaseBuilder {
       //如果在这些地方,属性多于一个的话,MyBatis 按照如下的顺序加载它们:
 
       //1.在 properties 元素体内指定的属性首先被读取。
-      //2.从类路径下资源或 properties 元素的 url 属性中加载的属性第二被读取,它会覆盖已经存在的完全一样的属性。
+      //2.从 类路径下资源或 properties元素的url属性中加载的属性 第二被读取,它会覆盖已经存在的完全一样的属性。
       //3.作为方法参数传递的属性最后被读取, 它也会覆盖任一已经存在的完全一样的属性,这些属性可能是从 properties 元素体内和资源/url 属性中加载的。
       //传入方式是调用构造函数时传入，public XMLConfigBuilder(Reader reader, String environment, Properties props)
 
-      //1.XNode.getChildrenAsProperties函数方便得到孩子所有Properties
+      //1.XNode.getChildrenAsProperties函数方便得到孩子所有Properties，这里读取的是properties节点下的直接配置的键值对的方式的子节点
       Properties defaults = context.getChildrenAsProperties();
       //2.然后查找resource或者url,加入前面的Properties
       String resource = context.getStringAttribute("resource");
       String url = context.getStringAttribute("url");
-      if (resource != null && url != null) {
+      if (resource != null && url != null) {   // resource和url不能同时使用
         throw new BuilderException("The properties element cannot specify both a URL and a resource based property file reference.  Please specify one or the other.");
       }
-      if (resource != null) {
-        defaults.putAll(Resources.getResourceAsProperties(resource));
-      } else if (url != null) {
-        defaults.putAll(Resources.getUrlAsProperties(url));
+      if (resource != null) {  // resource的优先级最高
+        defaults.putAll(Resources.getResourceAsProperties(resource));  // 将resource属性的值对应的文件中的数据读出来，并且以key-value的形式填充到defaults这个属性对象中
+      } else if (url != null) {  // url的优先级第二
+        defaults.putAll(Resources.getUrlAsProperties(url));  // 将url属性的值对应的文件中的数据读出来，并且以key-value的形式填充到defaults这个属性对象中
       }
       //3.Variables也全部加入Properties
       Properties vars = configuration.getVariables();
       if (vars != null) {
         defaults.putAll(vars);
       }
-      parser.setVariables(defaults);
-      configuration.setVariables(defaults);
+      parser.setVariables(defaults);  // 加入之后给xpath解析器赋值
+      configuration.setVariables(defaults);  // 加入之后重新赋值
     }
   }
 
@@ -375,22 +381,22 @@ public class XMLConfigBuilder extends BaseBuilder {
 //	</environments>
   private void environmentsElement(XNode context) throws Exception {
     if (context != null) {
-      if (environment == null) {
+      if (environment == null) {  // 如果没有在  new SqlSessionFactoryBuilder().build(inputStream);  这个时候设置环境名称，那么就使用配置的默认的default，所以必须有一个default环境
         environment = context.getStringAttribute("default");
       }
       for (XNode child : context.getChildren()) {
-        String id = child.getStringAttribute("id");
+        String id = child.getStringAttribute("id");  // 获取id用于比较
 		//循环比较id是否就是指定的environment
-        if (isSpecifiedEnvironment(id)) {
+        if (isSpecifiedEnvironment(id)) {  // 比较是否是是指定的环境
           //7.1事务管理器
-          TransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));
+          TransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));  // 获取事务管理器节点并且返回事务管理器工厂对象
           //7.2数据源
-          DataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
-          DataSource dataSource = dsFactory.getDataSource();
+          DataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));  // 获取数据源配置节点并且返回对应的数据源工厂对象
+          DataSource dataSource = dsFactory.getDataSource();  // 根据工厂对象获取数据源
           Environment.Builder environmentBuilder = new Environment.Builder(id)
               .transactionFactory(txFactory)
-              .dataSource(dataSource);
-          configuration.setEnvironment(environmentBuilder.build());
+              .dataSource(dataSource);  // 给环境构建对象  设置  使用哪一个环境   使用哪一个事务管理器   使用哪一个数据源
+          configuration.setEnvironment(environmentBuilder.build());  // 给configuration对象设置环境
         }
       }
     }
@@ -434,8 +440,8 @@ public class XMLConfigBuilder extends BaseBuilder {
 //</transactionManager>
   private TransactionFactory transactionManagerElement(XNode context) throws Exception {
     if (context != null) {
-      String type = context.getStringAttribute("type");
-      Properties props = context.getChildrenAsProperties();
+      String type = context.getStringAttribute("type");  // 获取事务管理类型，jdbc，我们使用的一般都是这个
+      Properties props = context.getChildrenAsProperties();  // 如果配置了属性值就继续读取配置的属性值
 		//根据type="JDBC"解析返回适当的TransactionFactory
       TransactionFactory factory = (TransactionFactory) resolveClass(type).newInstance();
       factory.setProperties(props);
@@ -456,8 +462,8 @@ public class XMLConfigBuilder extends BaseBuilder {
       String type = context.getStringAttribute("type");
       Properties props = context.getChildrenAsProperties();
 		//根据type="POOLED"解析返回适当的DataSourceFactory
-      DataSourceFactory factory = (DataSourceFactory) resolveClass(type).newInstance();
-      factory.setProperties(props);
+      DataSourceFactory factory = (DataSourceFactory) resolveClass(type).newInstance();  // 根据类型去匹配适当的类行
+      factory.setProperties(props);  // 填充属性到对象
       return factory;
     }
     throw new BuilderException("Environment declaration requires a DataSourceFactory.");
@@ -481,12 +487,12 @@ public class XMLConfigBuilder extends BaseBuilder {
           typeHandlerRegistry.register(typeHandlerPackage);
         } else {
           //如果是typeHandler
-          String javaTypeName = child.getStringAttribute("javaType");
-          String jdbcTypeName = child.getStringAttribute("jdbcType");
-          String handlerTypeName = child.getStringAttribute("handler");
-          Class<?> javaTypeClass = resolveClass(javaTypeName);
-          JdbcType jdbcType = resolveJdbcType(jdbcTypeName);
-          Class<?> typeHandlerClass = resolveClass(handlerTypeName);
+          String javaTypeName = child.getStringAttribute("javaType");  // 获取java的类型属性的值
+          String jdbcTypeName = child.getStringAttribute("jdbcType");  // 获取数据库类型属性的值
+          String handlerTypeName = child.getStringAttribute("handler");  // 获取类型处理器的值，就是某个类
+          Class<?> javaTypeClass = resolveClass(javaTypeName);  // 获取java的类型对应的类
+          JdbcType jdbcType = resolveJdbcType(jdbcTypeName);  // 获取数据库的类型对应的值
+          Class<?> typeHandlerClass = resolveClass(handlerTypeName);  // 获取处理器类
           //（二）调用TypeHandlerRegistry.register(以下是3种不同的参数形式)
           if (javaTypeClass != null) {
             if (jdbcType == null) {
@@ -531,15 +537,15 @@ public class XMLConfigBuilder extends BaseBuilder {
   private void mapperElement(XNode parent) throws Exception {
     if (parent != null) {
       for (XNode child : parent.getChildren()) {
-        if ("package".equals(child.getName())) {
+        if ("package".equals(child.getName())) {  // package优先级最高
           //10.4自动扫描包下所有映射器
           String mapperPackage = child.getStringAttribute("name");
           configuration.addMappers(mapperPackage);
         } else {
-          String resource = child.getStringAttribute("resource");
-          String url = child.getStringAttribute("url");
-          String mapperClass = child.getStringAttribute("class");
-          if (resource != null && url == null && mapperClass == null) {
+          String resource = child.getStringAttribute("resource");  // 获取resource对应的值
+          String url = child.getStringAttribute("url"); // 获取url对应的值
+          String mapperClass = child.getStringAttribute("class"); // 获取calss对应的值
+          if (resource != null && url == null && mapperClass == null) { // resource优先级第二
             //10.1使用类路径
             ErrorContext.instance().resource(resource);
             InputStream inputStream = Resources.getResourceAsStream(resource);

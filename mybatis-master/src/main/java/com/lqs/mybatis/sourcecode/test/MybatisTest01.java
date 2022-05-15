@@ -23,7 +23,6 @@ public class MybatisTest01 {
         System.out.println(inputStream);
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
 
-
         SqlSession sqlSession = sqlSessionFactory.openSession();
         UserMapper mapper = sqlSession.getMapper(UserMapper.class);
         User user = mapper.selectOne(1L);
