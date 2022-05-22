@@ -139,7 +139,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 			throws BeansException {
 
 		super(parent);
-		//设置xml配置文件路径，读取配置文件的路径，然后去除配置文件
+		//设置xml配置文件路径，读取配置文件的路径，然后取出配置文件路径
 		setConfigLocations(configLocations);
 		if (refresh) {
 			//解析及相关功能的实现
