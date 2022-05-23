@@ -1,0 +1,80 @@
+[[new]]
+== What's New in Spring Security 5.3
+
+Spring Security 5.3 provides a number of new features.
+Below are the highlights of the release.
+
+[[whats-new-documentation]]
+=== Documentation Updates
+
+We will continue our effort to rewrite the documentation.
+
+Here's what you'll see in this release:
+
+* Added <<servlet-architecture,Servlet Security: The Big Picture>>
+* Updated <<servlet-authentication,Servlet Authentication>>
+** Rewrote
+** Added how things work, including <servlet-delegatingfilterproxy-figure,diagrams>>
+* Added <<{gh-samples-url}/boot/kotlin,Kotlin samples>>
+* Reskinned
+** Added scrolling menu
+** Added <<servlet-authentication-userdetailsservice,toggle>>
+** Updated styles
+
+[[whats-new-servlet]]
+=== Servlet
+
+* Added <<kotlin-config-httpsecurity,Kotlin DSL>>
+* OAuth 2.0 Client
+** Added Test support for <<testing-oauth2-client,OAuth 2.0 Client>>, <<testing-oauth2-login,OAuth 2.0 Login>>, and <<testing-oidc-login,OIDC Login>>
+** Improved https://github.com/spring-projects/spring-security/pull/7748[customizing the OAuth 2.0 Authorization Request]
+** Enhanced https://github.com/spring-projects/spring-security/issues/7842[OIDC logout success handler to support `\{baseUrl\}`]
+** Added https://github.com/spring-projects/spring-security/issues/7840[OAuth2Authorization success and failure handlers]
+** Added https://github.com/spring-projects/spring-security/issues/5184[XML support]
+** Added <<dbschema-oauth2-client,JDBC support for storing OAuth 2.0 tokens>>
+** Added https://github.com/spring-projects/spring-security/issues/4886[JSON serialization support for OAuth 2.0 tokens]
+* OAuth 2.0 Resource Server
+** Added support for <<oauth2resourceserver-multitenancy,multiple issuers>>
+** Added <<testing-opaque-token,test support for Opaque Tokens>>
+** Added https://github.com/spring-projects/spring-security/pull/7962[generic claim validator]
+** Added https://github.com/spring-projects/spring-security/issues/5185[XML support]
+** Improved https://github.com/spring-projects/spring-security/pull/7826[bearer token error handling] for JWT and Opaque Token
+* SAML 2.0
+** Added <<servlet-saml2-opensamlauthenticationprovider-authenticationmanager,AuthenticationManager>> configuration
+** Added support for https://github.com/spring-projects/spring-security/issues/7711[AuthNRequest signatures]
+** Added support for https://github.com/spring-projects/spring-security/pull/7759[AuthNRequest POST binding]
+
+[[whats-new-webflux]]
+=== WebFlux
+
+* Added https://github.com/spring-projects/spring-security/issues/7636[DSL support for custom header writers]
+* OAuth 2.0 Client
+** Added Test support for https://github.com/spring-projects/spring-security/issues/7910[OAuth 2.0 Client], https://github.com/spring-projects/spring-security/issues/7828[OAuth 2.0 Login], and https://github.com/spring-projects/spring-security/issues/7680[OIDC Login]
+** Enhanced https://github.com/spring-projects/spring-security/issues/7842[OIDC logout success handler to support `\{baseUrl\}`]
+** Added https://github.com/spring-projects/spring-security/issues/7699[OAuth2Authorization success and failure handlers]
+** Added https://github.com/spring-projects/spring-security/issues/4886[JSON serialization support for OAuth 2.0 tokens]
+** Added https://github.com/spring-projects/spring-security/issues/7569[ReactiveOAuth2AuthorizedClientManager integration with AuthorizedClientService]
+* OAuth 2.0 Resource Server
+** Added support for <<webflux-oauth2resourceserver-multitenancy,multiple issuers>>
+** Added https://github.com/spring-projects/spring-security/issues/7827[test support for Opaque Tokens]
+** Improved https://github.com/spring-projects/spring-security/pull/7826[bearer token error handling] for JWT and Opaque Token
+
+[[whats-new-rsocket]]
+=== RSocket
+
+* Added support for https://github.com/spring-projects/spring-security/issues/7935[RSocket Authentication extension]
+
+[[whats-new-additional]]
+=== Additional Updates
+
+* Enhanced Authentication Event Publisher support
+** Updated https://github.com/spring-projects/spring-security/pull/7802[configuration support]
+** Added https://github.com/spring-projects/spring-security/issues/7825,default event>> and <<https://github.com/spring-projects/spring-security/issues/7824[`Map`-based] exception mapping
+* Improved https://github.com/spring-projects/spring-security/issues/7891[integration with Spring Data]
+* Added support to https://github.com/spring-projects/spring-security/issues/7661[BCrypt to hash byte arrays]
+
+[[whats-new-build]]
+=== Build Changes
+
+* Changed build to https://github.com/spring-projects/spring-security/issues/7788[use version ranges]
+* Removed https://github.com/spring-projects/spring-security/issues/4939[dependency on Groovy]

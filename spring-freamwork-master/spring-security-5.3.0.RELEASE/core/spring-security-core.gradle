@@ -1,0 +1,62 @@
+apply plugin: 'io.spring.convention.spring-module'
+
+def includeProject = project(':spring-security-crypto')
+
+configurations {
+	included
+	compile.extendsFrom included
+}
+
+dependencies {
+	compile 'org.springframework:spring-aop'
+	compile 'org.springframework:spring-beans'
+	compile 'org.springframework:spring-context'
+	compile 'org.springframework:spring-core'
+	compile 'org.springframework:spring-expression'
+
+	included includeProject
+
+	optional 'com.fasterxml.jackson.core:jackson-databind'
+	optional 'io.projectreactor:reactor-core'
+	optional 'javax.annotation:jsr250-api'
+	optional 'net.sf.ehcache:ehcache'
+	optional 'org.aspectj:aspectjrt'
+	optional 'org.springframework:spring-jdbc'
+	optional 'org.springframework:spring-tx'
+
+	testCompile powerMock2Dependencies
+	testCompile 'commons-collections:commons-collections'
+	testCompile 'io.projectreactor:reactor-test'
+	testCompile 'org.skyscreamer:jsonassert'
+	testCompile 'org.slf4j:jcl-over-slf4j'
+	testCompile 'org.springframework:spring-test'
+
+	testRuntime 'org.hsqldb:hsqldb'
+}
+
+task springVersion(type: versions.VersionsResourceTasks) {
+	versionsFile = file("${buildDir}/versions/spring-security.versions")
+	versions = provider { ["org.springframework:spring-core":"${springVersion()}"] }
+}
+
+tasks.processResources {
+	into('META-INF') {
+		from project.tasks.springVersion.outputs
+	}
+}
+
+tasks.jar.from { includeProject.sourceSets.main.output }
+
+tasks.sourcesJar.from {includeProject.sourceSets.main.java}
+
+configure(project.tasks.withType(Test)) {
+	doFirst {
+		systemProperties['springSecurityVersion'] = version
+		systemProperties['springVersion'] = springVersion()
+	}
+}
+
+String springVersion() {
+	return project.configurations.compile.resolvedConfiguration.resolvedArtifacts
+    .find { it.name == 'spring-core' }.moduleVersion.id.version
+}

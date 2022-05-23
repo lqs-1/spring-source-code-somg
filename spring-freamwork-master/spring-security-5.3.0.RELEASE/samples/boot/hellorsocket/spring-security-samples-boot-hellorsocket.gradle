@@ -1,0 +1,13 @@
+apply plugin: 'io.spring.convention.spring-sample-boot'
+
+ext['rsocket.version'] = '1.0.0-RC6'
+
+dependencies {
+	compile project(':spring-security-core')
+	compile project(':spring-security-config')
+	compile project(':spring-security-rsocket')
+	compile 'org.springframework.boot:spring-boot-starter-rsocket'
+
+	testCompile project(':spring-security-test')
+	testCompile 'org.springframework.boot:spring-boot-starter-test'
+}

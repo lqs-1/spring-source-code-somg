@@ -1,0 +1,28 @@
+apply plugin: "java-gradle-plugin"
+
+repositories {
+	mavenCentral()
+}
+
+gradlePlugin {
+	plugins {
+		trang {
+			id = "trang"
+			implementationClass = "trang.TrangPlugin"
+		}
+		locks {
+			id = "locks"
+			implementationClass = "lock.GlobalLockPlugin"
+		}
+	}
+}
+
+dependencies {
+	compile 'com.thaiopensource:trang:20091111'
+	compile 'net.sourceforge.saxon:saxon:9.1.0.8'
+}
+
+task ide(type: Copy)  {
+	from configurations.runtime
+	into 'ide'
+}

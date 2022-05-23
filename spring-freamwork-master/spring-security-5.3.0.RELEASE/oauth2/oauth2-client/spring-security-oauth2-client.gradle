@@ -1,0 +1,29 @@
+apply plugin: 'io.spring.convention.spring-module'
+
+dependencies {
+	compile project(':spring-security-core')
+	compile project(':spring-security-oauth2-core')
+	compile project(':spring-security-web')
+	compile springCoreDependency
+	compile 'com.nimbusds:oauth2-oidc-sdk'
+
+	optional project(':spring-security-oauth2-jose')
+	optional 'io.projectreactor:reactor-core'
+	optional 'org.springframework:spring-webflux'
+	optional 'com.fasterxml.jackson.core:jackson-databind'
+	optional 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+	optional 'org.springframework:spring-jdbc'
+
+	testCompile project(path: ':spring-security-oauth2-core', configuration: 'tests')
+	testCompile project(path: ':spring-security-oauth2-jose', configuration: 'tests')
+	testCompile powerMock2Dependencies
+	testCompile 'com.squareup.okhttp3:mockwebserver'
+	testCompile 'io.projectreactor.netty:reactor-netty'
+	testCompile 'io.projectreactor:reactor-test'
+	testCompile 'io.projectreactor.tools:blockhound'
+	testCompile 'org.skyscreamer:jsonassert'
+
+	testRuntime 'org.hsqldb:hsqldb'
+
+	provided 'javax.servlet:javax.servlet-api'
+}

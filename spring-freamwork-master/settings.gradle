@@ -20,6 +20,7 @@ include "spring-webmvc"
 include "spring-webflux"
 include "spring-websocket"
 include "spring-framework-bom"
+include "spring-security-5.3.0.RELEASE"
 
 // Exposes gradle buildSrc for IDE support
 include "buildSrc"
